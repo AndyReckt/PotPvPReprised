@@ -106,19 +106,19 @@ public enum Setting {
         false,
         null // no permission required
     ),
-    ENABLE_GLOBAL_CHAT(
-        ChatColor.RED + "Global Chat",
+    PLAYERS_IN_LOBBY(
+        ChatColor.RED + "Players in Lobby",
         ImmutableList.of(
-            ChatColor.BLUE + "If enabled, you will see messages",
-            ChatColor.BLUE + "sent in the global chat channel.",
+            ChatColor.BLUE + "If enabled, you will see",
+            ChatColor.BLUE + "ranked players in the lobby.",
             "",
-            ChatColor.BLUE + "Disable to only see OP messages."
+            ChatColor.BLUE + "Disable to see nobody."
         ),
-        Material.BOOK_AND_QUILL,
-        ChatColor.YELLOW + "Global chat is shown",
-        ChatColor.YELLOW + "Global chat is hidden",
-        true,
-        null // no permission required
+        Material.EYE_OF_ENDER,
+        ChatColor.YELLOW + "Players are shown in lobby",
+        ChatColor.YELLOW + "Players are hidden in lobby",
+        false,
+        "potpvp.donator" // no permission required
     ),
     SEE_TOURNAMENT_JOIN_MESSAGE(
             ChatColor.DARK_PURPLE + "Tournament Join Messages",

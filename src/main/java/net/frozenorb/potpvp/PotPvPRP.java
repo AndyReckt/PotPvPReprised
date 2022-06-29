@@ -26,7 +26,7 @@ import net.frozenorb.potpvp.command.impl.misc.*;
 import net.frozenorb.potpvp.command.impl.settings.NightCommand;
 import net.frozenorb.potpvp.command.impl.settings.SettingsCommand;
 import net.frozenorb.potpvp.command.impl.settings.ToggleDuelCommand;
-import net.frozenorb.potpvp.command.impl.settings.ToggleGlobalChatCommand;
+import net.frozenorb.potpvp.command.impl.settings.ViewPlayersInLobby;
 import net.frozenorb.potpvp.command.impl.silent.FollowCommand;
 import net.frozenorb.potpvp.command.impl.silent.SilentCommand;
 import net.frozenorb.potpvp.command.impl.silent.SilentFollowCommand;
@@ -38,6 +38,7 @@ import net.frozenorb.potpvp.hologram.HologramHandler;
 import net.frozenorb.potpvp.kit.KitHandler;
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.kit.kittype.KitTypeJsonAdapter;
+import net.frozenorb.potpvp.util.nametags.Ostentus;
 import net.frozenorb.potpvp.util.serialization.*;
 import net.frozenorb.potpvp.listener.*;
 import net.frozenorb.potpvp.lobby.LobbyHandler;
@@ -58,7 +59,6 @@ import net.frozenorb.potpvp.util.ChunkSnapshotAdapter;
 import net.frozenorb.potpvp.util.config.impl.BasicConfigurationFile;
 import net.frozenorb.potpvp.util.event.HalfHourEvent;
 import net.frozenorb.potpvp.util.menu.ButtonListener;
-import net.frozenorb.potpvp.util.nametag.NameTagHandler;
 import net.frozenorb.potpvp.util.scoreboard.api.AssembleStyle;
 import net.frozenorb.potpvp.util.scoreboard.api.ScoreboardHandler;
 import net.frozenorb.potpvp.util.uuid.UUIDCache;
@@ -131,7 +131,7 @@ public final class PotPvPRP extends JavaPlugin {
     public ScoreboardHandler scoreboardHandler;
     public HologramHandler hologramHandler;
     public CommandHandler commandHandler;
-    public NameTagHandler nameTagHandler;
+    public Ostentus nameTagHandler;
 
     public UUIDCache uuidCache;
 
@@ -166,11 +166,11 @@ public final class PotPvPRP extends JavaPlugin {
         //TablistAdapter tablistAdapter = new TablistAdapter();
 
         this.scoreboardHandler = new ScoreboardHandler(this, scoreboardAdapter);
-        this.scoreboardHandler.setAssembleStyle(AssembleStyle.KOHI);
+        this.scoreboardHandler.setAssembleStyle(AssembleStyle.VIPER);
         this.scoreboardHandler.setTicks(2);
 
-        this.nameTagHandler = new NameTagHandler(this);
-        this.nameTagHandler.registerAdapter(nameTagAdapter);
+        this.nameTagHandler = new Ostentus(this, nameTagAdapter);
+        this.nameTagHandler.setTicks(4);
 
         /*if (this.configHandler.isTAB_ENABLED()) {
            long tickTime = tablistConfig.getInteger("TABLIST.UPDATE_TICKS") * 20L;
@@ -209,6 +209,7 @@ public final class PotPvPRP extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new BowHealthListener(), this);
         this.getServer().getPluginManager().registerEvents(new ChatToggleListener(), this);
         this.getServer().getPluginManager().registerEvents(new NightModeListener(), this);
+        this.getServer().getPluginManager().registerEvents(new ModModeListener(), this);
         this.getServer().getPluginManager().registerEvents(new PearlCooldownListener(), this);
         this.getServer().getPluginManager().registerEvents(new TabCompleteListener(), this);
         this.getServer().getPluginManager().registerEvents(new StatisticsHandler(), this);
@@ -293,7 +294,7 @@ public final class PotPvPRP extends JavaPlugin {
         commandHandler.register(new NightCommand(), "night", "nightMode");
         commandHandler.register(new SettingsCommand(), "settings");
         commandHandler.register(new ToggleDuelCommand(), "toggleduels", "tduels", "td");
-        commandHandler.register(new ToggleGlobalChatCommand(), "toggleGlobalChat", "tgc", "togglechat");
+        commandHandler.register(new ViewPlayersInLobby(), "toggleGlobalChat", "tgc", "togglechat");
 
         commandHandler.register(new SetSpawnCommand(), "setspawn");
         commandHandler.register(new PingCommand(), "ping");

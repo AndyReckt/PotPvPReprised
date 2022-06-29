@@ -35,9 +35,7 @@ public final class KitType {
     static {
         MongoCollection<Document> collection = MongoUtils.getCollection(MONGO_COLLECTION_NAME);
 
-        collection.find().iterator().forEachRemaining(doc -> {
-            allTypes.add(PotPvPRP.plainGson.fromJson(doc.toJson(), KitType.class));
-        });
+        collection.find().iterator().forEachRemaining(doc -> allTypes.add(PotPvPRP.plainGson.fromJson(doc.toJson(), KitType.class)));
 
         teamFight.icon = new MaterialData(Material.BEACON);
         teamFight.id = "HCFTeamFight";

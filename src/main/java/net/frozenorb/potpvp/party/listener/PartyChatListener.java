@@ -19,7 +19,7 @@ public final class PartyChatListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        if (!event.getMessage().startsWith("@")) {
+        if (!event.getMessage().startsWith("!")) {
             return;
         }
 

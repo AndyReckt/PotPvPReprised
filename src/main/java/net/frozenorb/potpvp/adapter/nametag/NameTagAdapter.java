@@ -1,32 +1,23 @@
 package net.frozenorb.potpvp.adapter.nametag;
 
+import me.andyreckt.holiday.Holiday;
 import net.frozenorb.potpvp.PotPvPRP;
-import net.frozenorb.potpvp.profile.follow.FollowHandler;;
 import net.frozenorb.potpvp.match.Match;
 import net.frozenorb.potpvp.match.MatchHandler;
 import net.frozenorb.potpvp.match.MatchTeam;
-import net.frozenorb.potpvp.util.nametag.construct.NameTagInfo;
+import net.frozenorb.potpvp.profile.follow.FollowHandler;
 import net.frozenorb.potpvp.pvpclasses.pvpclasses.ArcherClass;
-
-import net.frozenorb.potpvp.util.nametag.provider.NameTagProvider;
+import net.frozenorb.potpvp.util.nametags.BufferedNametag;
+import net.frozenorb.potpvp.util.nametags.OstentusAdapter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class NameTagAdapter extends NameTagProvider {
-
-    public NameTagAdapter() {
-        super("PotPvP Provider", 1);
-    }
-
-    @Override
-    public NameTagInfo fetchNameTag(Player toRefresh, Player refreshFor) {
-        ChatColor prefixColor = getNameColor(toRefresh, refreshFor);
-        return createNameTag(prefixColor.toString(), "");
-    }
+public final class NameTagAdapter implements OstentusAdapter {
 
     public static ChatColor getNameColor(Player toRefresh, Player refreshFor) {
         MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
@@ -96,8 +87,47 @@ public final class NameTagAdapter extends NameTagProvider {
         if (refreshForFollowingTarget) {
             return ChatColor.AQUA;
         } else {
-            return ChatColor.GREEN;
+            return Holiday.getInstance().getProfileHandler().getByPlayer(toRefresh).getDisplayRank().getColor();
         }
     }
 
+    @Override
+    public List<BufferedNametag> getPlate(Player player) {
+
+        List<BufferedNametag> nametags = new ArrayList<>();
+
+        for (Player toRefresh : PotPvPRP.getInstance().getServer().getOnlinePlayers()) {
+            nametags.add(fetchNameTag(toRefresh, player));
+        }
+
+        return nametags;
+    }
+
+    @Override
+    public boolean showHealthBelowName(Player player) {
+        MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
+        if (matchHandler.isPlayingMatch(player)) {
+            Match match = matchHandler.getMatchPlaying(player);
+            return match.getKitType().isHealthShown();
+        }
+        return false;
+    }
+
+    public BufferedNametag fetchNameTag(Player toRefresh, Player refreshFor) {
+        ChatColor prefixColor = getNameColor(toRefresh, refreshFor);
+
+        boolean invis = false;
+        MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
+        if (matchHandler.isPlayingMatch(toRefresh) && matchHandler.isPlayingMatch(refreshFor)) {
+            Match match = matchHandler.getMatchPlaying(toRefresh);
+            MatchTeam team = match.getTeam(toRefresh.getUniqueId());
+            if (team != null) {
+                if (team.getAllMembers().contains(refreshFor.getUniqueId())) {
+                    invis = true;
+                }
+            }
+        }
+
+        return new BufferedNametag(toRefresh.getUniqueId().toString().substring(0, 15), prefixColor.toString(), "", invis, toRefresh);
+    }
 }

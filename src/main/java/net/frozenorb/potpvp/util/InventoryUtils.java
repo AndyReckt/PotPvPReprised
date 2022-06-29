@@ -21,6 +21,9 @@ public final class InventoryUtils {
     }
 
     public static void resetInventoryNow(Player player) {
+
+        if (HolidayUtils.isInStaffMode(player)) return;
+
         MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
 
         if (matchHandler.isPlayingOrSpectatingMatch(player)) {

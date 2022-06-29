@@ -44,7 +44,6 @@ public final class FollowHandler {
         } else {
             InventoryUtils.resetInventoryDelayed(player);
             VisibilityUtils.updateVisibility(player);
-            PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(player);
 
             player.teleport(target);
         }
@@ -57,7 +56,6 @@ public final class FollowHandler {
             player.sendMessage(ChatColor.BLUE + "Stopped following " + ChatColor.YELLOW + PotPvPRP.getInstance().getUuidCache().name(prevTarget) + ChatColor.BLUE + ".");
             InventoryUtils.resetInventoryDelayed(player);
             VisibilityUtils.updateVisibility(player);
-            PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(player);
         }
     }
 

@@ -133,15 +133,6 @@ public class ArcherClass extends PvPClass {
                 getMarkedBy().putIfAbsent(shooter.getName(), new HashSet<>());
                 getMarkedBy().get(shooter.getName()).add(new Pair<>(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000)));
 
-                PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(player);
-
-                new BukkitRunnable() {
-
-                    public void run() {
-                        PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(player);
-                    }
-
-                }.runTaskLater(PotPvPRP.getInstance(), (MARK_SECONDS * 20) + 5);
             } else {
                 shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
             }

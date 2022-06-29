@@ -7,6 +7,7 @@ import net.frozenorb.potpvp.lobby.listener.LobbyGeneralListener;
 import net.frozenorb.potpvp.lobby.listener.LobbyItemListener;
 import net.frozenorb.potpvp.lobby.listener.LobbyParkourListener;
 import net.frozenorb.potpvp.lobby.listener.LobbySpecModeListener;
+import net.frozenorb.potpvp.util.HolidayUtils;
 import net.frozenorb.potpvp.util.InventoryUtils;
 import net.frozenorb.potpvp.util.PatchedPlayerUtils;
 import net.frozenorb.potpvp.util.VisibilityUtils;
@@ -54,14 +55,11 @@ public final class LobbyHandler {
     private void returnToLobbySkipItemSlot(Player player) {
         player.teleport(getLobbyLocation());
 
-        PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(player);
-        PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(player);
-
         VisibilityUtils.updateVisibility(player);
         PatchedPlayerUtils.resetInventory(player, GameMode.SURVIVAL, true);
         InventoryUtils.resetInventoryDelayed(player);
 
-        player.setGameMode(GameMode.SURVIVAL);
+        if (!HolidayUtils.isInStaffMode(player)) player.setGameMode(GameMode.SURVIVAL);
 
         returnedToLobby.put(player.getUniqueId(), System.currentTimeMillis());
     }

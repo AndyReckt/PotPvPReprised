@@ -28,6 +28,7 @@ public class PatchedPlayerUtils {
     }
 
     public static void resetInventory(Player player, GameMode gameMode, boolean skipInvReset) {
+        if (HolidayUtils.isInStaffMode(player)) return;
         player.setHealth(player.getMaxHealth());
         player.setFallDistance(0F);
         player.setFoodLevel(20);

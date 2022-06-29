@@ -30,14 +30,15 @@ final class LobbyScoreGetter implements BiConsumer<Player, List<String>> {
         EloHandler eloHandler = PotPvPRP.getInstance().getEloHandler();
 
         Party playerParty = partyHandler.getParty(player);
+
+        scores.add("&fOnline: &b" + PotPvPRP.getInstance().getCache().getOnlineCount());
+        scores.add("&fPlaying: &b" + PotPvPRP.getInstance().getCache().getFightsCount());
+
         if (playerParty != null) {
             int size = playerParty.getMembers().size();
+            scores.add("&7&o&p");
             scores.add("&9Your Party: &f" + size);
         }
-
-        scores.add("&eOnline: &f" + PotPvPRP.getInstance().getCache().getOnlineCount());
-        scores.add("&dIn Fights: &f" + PotPvPRP.getInstance().getCache().getFightsCount());
-        scores.add("&bIn Queues: &f" + PotPvPRP.getInstance().getCache().getQueuesCount());
 
         // this definitely can be a .ifPresent, however creating the new lambda that often
         // was causing some performance issues, so we do this less pretty (but more efficent)

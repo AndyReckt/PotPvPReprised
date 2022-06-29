@@ -1,5 +1,7 @@
 package net.frozenorb.potpvp.util;
 
+import me.andyreckt.holiday.Holiday;
+import me.andyreckt.holiday.player.ProfileHandler;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.profile.follow.FollowHandler;
 import net.frozenorb.potpvp.match.Match;
@@ -50,26 +52,31 @@ public final class VisibilityUtils {
         FollowHandler followHandler = PotPvPRP.getInstance().getFollowHandler();
         PartyHandler partyHandler = PotPvPRP.getInstance().getPartyHandler();
         MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
+        ProfileHandler profileHandler = Holiday.getInstance().getProfileHandler();
 
         Match targetMatch = matchHandler.getMatchPlayingOrSpectating(target);
 
+        boolean targetStaffMode = (profileHandler.getByPlayer(target).isInStaffMode() && !profileHandler.getByPlayer(viewer).isInStaffMode());
+
         if (targetMatch == null) {
-            // we're not in a match so we hide other players based on their party/match
+            // we're not in a match so we hide other players based on their party/match/rank
             Party targetParty = partyHandler.getParty(target);
             Optional<UUID> following = followHandler.getFollowing(viewer);
 
             boolean viewerPlayingMatch = matchHandler.isPlayingOrSpectatingMatch(viewer);
             boolean viewerSameParty = targetParty != null && targetParty.isMember(viewer.getUniqueId());
             boolean viewerFollowingTarget = following.isPresent() && following.get().equals(target.getUniqueId());
+            boolean targetIsRanked = settingHandler.getSetting(viewer, Setting.PLAYERS_IN_LOBBY) && target.hasPermission("potpvp.donator") ;
 
-            return viewerPlayingMatch || viewerSameParty || viewerFollowingTarget;
+            return !targetStaffMode && (viewerPlayingMatch || viewerSameParty || viewerFollowingTarget || targetIsRanked);
         } else {
             // we're in a match so we only hide other spectators (if our settings say so)
             boolean targetIsSpectator = targetMatch.isSpectator(target.getUniqueId());
             boolean viewerSpecSetting = settingHandler.getSetting(viewer, Setting.VIEW_OTHER_SPECTATORS);
             boolean viewerIsSpectator = matchHandler.isSpectatingMatch(viewer);
 
-            return !targetIsSpectator || (viewerSpecSetting && viewerIsSpectator && !target.hasMetadata("ModMode"));
+
+            return !targetIsSpectator || (viewerSpecSetting && viewerIsSpectator && !target.hasMetadata("ModMode") && !targetStaffMode);
         }
     }
 

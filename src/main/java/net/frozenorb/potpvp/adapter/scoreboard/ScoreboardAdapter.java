@@ -9,7 +9,7 @@ public class ScoreboardAdapter extends ScoreboardConfiguration {
 
     public ScoreboardAdapter() {
         this.setTitleGetter(
-                new TitleGetter("&6&lMineHQ &7" + StringEscapeUtils.unescapeJava("\u2758") +" &fPractice"));
+                new TitleGetter("&bCausal &7" + StringEscapeUtils.unescapeJava("\u2758") +" &fPractice"));
         this.setScoreGetter(
                 new MultiplexingScoreGetter(
                         new MatchScoreGetter(),

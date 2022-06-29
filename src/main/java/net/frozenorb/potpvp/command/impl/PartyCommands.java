@@ -64,7 +64,7 @@ public class PartyCommands implements PotPvPCommand {
             "§e/party password <password> §7 - Sets party password",
             "",
             "§9Other Help:",
-            "§eTo use §dparty chat§e, prefix your message with the §7'§d@§7' §esign.",
+            "§eTo use §dparty chat§e, prefix your message with the §7'§d!§7' §esign.",
             ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE
     );
 
