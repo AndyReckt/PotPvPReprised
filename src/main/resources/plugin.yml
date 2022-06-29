@@ -4,5 +4,6 @@ version: 1.8.8
 main: net.frozenorb.potpvp.PotPvPRP
 depend:
   - ProtocolLib
+  - Holiday
 softdepend:
   - HolographicDisplays

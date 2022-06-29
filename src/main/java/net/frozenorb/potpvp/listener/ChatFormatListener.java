@@ -12,7 +12,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public final class ChatFormatListener implements Listener {
 
-    @EventHandler
+    // DISABLED
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 

@@ -46,8 +46,6 @@ public class EventListeners implements Listener {
         if (event.getTo() == GameState.ENDED) {
             PotPvPRP.getInstance().getArenaHandler().releaseArena(game.getArena());
             for (Player player : game.getPlayers()) {
-                PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(player);
-                PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(player);
                 VisibilityUtils.updateVisibility(player);
                 PotPvPRP.getInstance().getLobbyHandler().returnToLobby(player);
             }
@@ -56,8 +54,6 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onPlayerJoinGameEvent(PlayerJoinGameEvent event) {
-        PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(event.getPlayer());
-        PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(event.getPlayer());
         for (Player player : event.getGame().getPlayers()) {
             VisibilityUtils.updateVisibility(player);
         }
@@ -65,15 +61,11 @@ public class EventListeners implements Listener {
 
     @EventHandler
     public void onPlayerQuitGameEvent(PlayerQuitGameEvent event) {
-        PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(event.getPlayer());
-        PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(event.getPlayer());
         PotPvPRP.getInstance().getLobbyHandler().returnToLobby(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerGameInteractionEvent(PlayerGameInteractionEvent event) {
-        PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(event.getPlayer());
-        PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(event.getPlayer());
         VisibilityUtils.updateVisibility(event.getPlayer());
     }
 

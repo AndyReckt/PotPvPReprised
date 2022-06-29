@@ -18,7 +18,7 @@ public final class ChatToggleListener implements Listener {
         }
 
         SettingHandler settingHandler = PotPvPRP.getInstance().getSettingHandler();
-        event.getRecipients().removeIf(p -> !settingHandler.getSetting(p, Setting.ENABLE_GLOBAL_CHAT));
+        event.getRecipients().removeIf(p -> !settingHandler.getSetting(p, Setting.PLAYERS_IN_LOBBY));
     }
 
 }

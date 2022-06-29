@@ -35,9 +35,6 @@ public final class BasicPreventionListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         // if we have a whitelist we probably are manually
         // controlling who can log in and don't need this
-        if (true || Bukkit.hasWhitelist()) {
-            return;
-        }
 
 //        ProfileHandler profileHandler = Hydrogen.getInstance().getProfileHandler();
 //        Optional<Profile> profileOpt = profileHandler.getProfile(event.getPlayer().getUniqueId());

@@ -154,9 +154,6 @@ public final class Match {
                 player.teleport(spawn);
                 player.getInventory().setHeldItemSlot(0);
                 
-                PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(player);
-                PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(player);
-                
                 updateVisiblity.add(player);
                 PatchedPlayerUtils.resetInventory(player, GameMode.SURVIVAL);
             }
@@ -382,9 +379,6 @@ public final class Match {
             // so players don't accidentally click the item to stop spectating
             player.getInventory().setHeldItemSlot(0);
         }
-        
-        PotPvPRP.getInstance().getNameTagHandler().reloadPlayer(player);
-        PotPvPRP.getInstance().getNameTagHandler().reloadOthersFor(player);
         
         VisibilityUtils.updateVisibility(player);
         PatchedPlayerUtils.resetInventory(player, GameMode.CREATIVE, true); // because we're about to reset their inv on a timer

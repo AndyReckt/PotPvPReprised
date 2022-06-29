@@ -24,7 +24,7 @@ import net.frozenorb.potpvp.command.impl.misc.*;
 import net.frozenorb.potpvp.command.impl.settings.NightCommand;
 import net.frozenorb.potpvp.command.impl.settings.SettingsCommand;
 import net.frozenorb.potpvp.command.impl.settings.ToggleDuelCommand;
-import net.frozenorb.potpvp.command.impl.settings.ToggleGlobalChatCommand;
+import net.frozenorb.potpvp.command.impl.settings.ViewPlayersInLobby;
 import net.frozenorb.potpvp.command.impl.silent.FollowCommand;
 import net.frozenorb.potpvp.command.impl.silent.SilentCommand;
 import net.frozenorb.potpvp.command.impl.silent.SilentFollowCommand;
@@ -39,6 +39,11 @@ import net.frozenorb.potpvp.hologram.PracticeHologram;
 import net.frozenorb.potpvp.kit.KitHandler;
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.kit.kittype.KitTypeJsonAdapter;
+<<<<<<< HEAD
+=======
+import net.frozenorb.potpvp.util.nametags.Ostentus;
+import net.frozenorb.potpvp.util.serialization.*;
+>>>>>>> master
 import net.frozenorb.potpvp.listener.*;
 import net.frozenorb.potpvp.lobby.LobbyHandler;
 import net.frozenorb.potpvp.match.MatchHandler;
@@ -57,7 +62,6 @@ import net.frozenorb.potpvp.tournament.TournamentListener;
 import net.frozenorb.potpvp.util.ChunkSnapshotAdapter;
 import net.frozenorb.potpvp.util.event.HalfHourEvent;
 import net.frozenorb.potpvp.util.menu.ButtonListener;
-import net.frozenorb.potpvp.util.nametag.NameTagHandler;
 import net.frozenorb.potpvp.util.scoreboard.api.AssembleStyle;
 import net.frozenorb.potpvp.util.scoreboard.api.ScoreboardHandler;
 import net.frozenorb.potpvp.util.serialization.*;
@@ -131,8 +135,12 @@ public final class PotPvPRP extends JavaPlugin {
     public ScoreboardHandler scoreboardHandler;
     public HologramHandler hologramHandler;
     public CommandHandler commandHandler;
+<<<<<<< HEAD
     public NameTagHandler nameTagHandler;
     public TablistHandler tablistHandler;
+=======
+    public Ostentus nameTagHandler;
+>>>>>>> master
 
     public UUIDCache uuidCache;
 
@@ -160,6 +168,38 @@ public final class PotPvPRP extends JavaPlugin {
         this.registerCommands();
         this.registerPermission();
 
+<<<<<<< HEAD
+=======
+        ScoreboardAdapter scoreboardAdapter = new ScoreboardAdapter();
+        NameTagAdapter nameTagAdapter = new NameTagAdapter();
+        //TablistAdapter tablistAdapter = new TablistAdapter();
+
+        this.scoreboardHandler = new ScoreboardHandler(this, scoreboardAdapter);
+        this.scoreboardHandler.setAssembleStyle(AssembleStyle.VIPER);
+        this.scoreboardHandler.setTicks(2);
+
+        this.nameTagHandler = new Ostentus(this, nameTagAdapter);
+        this.nameTagHandler.setTicks(4);
+
+        /*if (this.configHandler.isTAB_ENABLED()) {
+           long tickTime = tablistConfig.getInteger("TABLIST.UPDATE_TICKS") * 20L;
+           this.tablistHandler = new TablistHandler(tablistAdapter, this, tickTime);
+        }*/
+
+        if (this.getServer().getPluginManager().isPluginEnabled("HolographicDisplays")) {
+            this.logger("&7Found &cHolographicDisplays&7, Hooking holograms....");
+            hologramsConfig = new BasicConfigurationFile(this, "holograms");
+            this.hologramHandler = new HologramHandler(this, hologramsConfig);
+            this.hologramHandler.init();
+        }
+
+        for (World world : Bukkit.getWorlds()) {
+            world.setGameRuleValue("doDaylightCycle", "false");
+            world.setGameRuleValue("doMobSpawning", "false");
+            world.setTime(6_000L);
+        }
+
+>>>>>>> master
         kitHandler = new KitHandler();
         eloHandler = new EloHandler();
         gameHandler = new GameHandler();
@@ -180,6 +220,7 @@ public final class PotPvPRP extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new BowHealthListener(), this);
         this.getServer().getPluginManager().registerEvents(new ChatToggleListener(), this);
         this.getServer().getPluginManager().registerEvents(new NightModeListener(), this);
+        this.getServer().getPluginManager().registerEvents(new ModModeListener(), this);
         this.getServer().getPluginManager().registerEvents(new PearlCooldownListener(), this);
         this.getServer().getPluginManager().registerEvents(new TabCompleteListener(), this);
         this.getServer().getPluginManager().registerEvents(new StatisticsHandler(), this);
@@ -259,7 +300,7 @@ public final class PotPvPRP extends JavaPlugin {
         commandHandler.register(new NightCommand(), "night", "nightMode");
         commandHandler.register(new SettingsCommand(), "settings");
         commandHandler.register(new ToggleDuelCommand(), "toggleduels", "tduels", "td");
-        commandHandler.register(new ToggleGlobalChatCommand(), "toggleGlobalChat", "tgc", "togglechat");
+        commandHandler.register(new ViewPlayersInLobby(), "toggleGlobalChat", "tgc", "togglechat");
 
         commandHandler.register(new SetSpawnCommand(), "setspawn");
         commandHandler.register(new PingCommand(), "ping");
