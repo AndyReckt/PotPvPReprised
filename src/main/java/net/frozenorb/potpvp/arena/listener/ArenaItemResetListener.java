@@ -1,5 +1,6 @@
 package net.frozenorb.potpvp.arena.listener;
 
+import com.google.common.collect.Sets;
 import net.frozenorb.potpvp.arena.event.ArenaReleasedEvent;
 import net.frozenorb.potpvp.util.Cuboid;
 
@@ -21,26 +22,25 @@ public final class ArenaItemResetListener implements Listener {
 
     @EventHandler
     public void onArenaReleased(ArenaReleasedEvent event) {
-        Set<Chunk> coveredChunks = new HashSet<>();
+        Set<Chunk> chunks = Sets.newHashSet();
         Cuboid bounds = event.getArena().getBounds();
-
-        Location minPoint = bounds.getLowerNE();
-        Location maxPoint = bounds.getUpperSW();
+        Location minPoint = bounds.getUpperSW();
+        Location maxPoint = bounds.getLowerNE();
         World world = minPoint.getWorld();
 
         // definitely a better way to increment than += 1 but arenas
         // are small enough this doesn't matter
         for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
             for (int z = minPoint.getBlockZ(); z <= maxPoint.getBlockZ(); z++) {
-                // getChunkAt wants chunk x/z coords, not block coords
-                coveredChunks.add(world.getChunkAt(x >> 4, z >> 4));
+                chunks.add(world.getChunkAt(x >> 4, z >> 4));
             }
         }
 
         // force load all chunks (can't iterate entities in an unload chunk)
         // that are at all covered by this map.
-        coveredChunks.forEach(Chunk::load);
-        coveredChunks.forEach(chunk -> {
+        chunks.forEach(chunk -> {
+            if (!chunk.isLoaded()) chunk.load();
+
             for (Entity entity : chunk.getEntities()) {
                 // if we remove all entities we might call .remove()
                 // on a player (breaks a lot of things)

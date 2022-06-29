@@ -1,13 +1,13 @@
 package net.frozenorb.potpvp.kit.kittype.menu.select;
 
 import com.google.common.base.Preconditions;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.util.Callback;
 import net.frozenorb.potpvp.util.InventoryUtils;
 import net.frozenorb.potpvp.util.menu.Button;
 import net.frozenorb.potpvp.util.menu.Menu;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -15,9 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * Similar to {@link SelectKitTypeMenu} but allows the user to set custom
@@ -71,11 +68,12 @@ public final class CustomSelectKitTypeMenu extends Menu {
         return buttons;
     }
 
-    @AllArgsConstructor
+    @Getter
+    @RequiredArgsConstructor
     public static final class CustomKitTypeMeta {
 
-        @Getter private int quantity;
-        @Getter private List<String> description;
+        private final int quantity;
+        private final List<String> description;
 
     }
 

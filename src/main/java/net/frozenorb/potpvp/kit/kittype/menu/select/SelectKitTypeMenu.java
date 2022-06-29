@@ -13,8 +13,7 @@ import net.frozenorb.potpvp.util.menu.Menu;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class SelectKitTypeMenu extends Menu {
 
@@ -24,6 +23,7 @@ public final class SelectKitTypeMenu extends Menu {
 
     public SelectKitTypeMenu(Callback<KitType> callback, String title) {
         this(callback, true, title);
+        setPlaceholder(true);
     }
 
     public SelectKitTypeMenu(Callback<KitType> callback, boolean reset, String title) {

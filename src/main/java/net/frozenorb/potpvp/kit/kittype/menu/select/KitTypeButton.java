@@ -4,14 +4,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import net.frozenorb.potpvp.kit.kittype.KitType;
-import net.frozenorb.potpvp.util.menu.Button;
 import net.frozenorb.potpvp.util.Callback;
-
+import net.frozenorb.potpvp.util.menu.Button;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.InventoryView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +34,7 @@ final class KitTypeButton extends Button {
 
     @Override
     public String getName(Player player) {
-        return kitType.getDisplayColor() + ChatColor.BOLD.toString() + kitType.getDisplayName();
+        return ChatColor.RED + kitType.getDisplayName();
     }
 
     @Override

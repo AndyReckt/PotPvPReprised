@@ -3,10 +3,11 @@ package net.frozenorb.potpvp.adapter.scoreboard;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import com.qrakn.morpheus.game.Game;
-import com.qrakn.morpheus.game.GameQueue;
-import com.qrakn.morpheus.game.GameState;
+import net.frozenorb.potpvp.events.Game;
+import net.frozenorb.potpvp.events.GameHandler;
+import net.frozenorb.potpvp.events.GameState;
 import net.frozenorb.potpvp.util.scoreboard.construct.ScoreGetter;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.potpvp.PotPvPRP;
@@ -43,13 +44,18 @@ final class MultiplexingScoreGetter implements ScoreGetter {
             if (matchHandler.isPlayingOrSpectatingMatch(player)) {
                 matchScoreGetter.accept(player, scores);
             } else {
-                Game game = GameQueue.INSTANCE.getCurrentGame(player);
+                Game game = PotPvPRP.getInstance().getGameHandler().getCurrentGame(player);
 
                 if (game != null && game.getPlayers().contains(player) && game.getState() != GameState.ENDED) {
                     gameScoreGetter.accept(player, scores);
                 } else {
                     lobbyScoreGetter.accept(player, scores);
                 }
+            }
+            scores.add("");
+            scores.add("&7test.refinedev.xyz");
+            if (player.hasMetadata("ModMode")) {
+                scores.add(ChatColor.GRAY.toString() + ChatColor.BOLD + "In Silent Mode");
             }
             scores.add(CC.SB_BAR);
         }
