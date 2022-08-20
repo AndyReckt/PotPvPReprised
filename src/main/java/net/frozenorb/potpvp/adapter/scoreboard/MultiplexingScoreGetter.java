@@ -53,9 +53,9 @@ final class MultiplexingScoreGetter implements ScoreGetter {
                 }
             }
             scores.add("");
-            scores.add("&7test.refinedev.xyz");
+            scores.add("&7causalmc.cc");
             if (player.hasMetadata("ModMode")) {
-                scores.add(ChatColor.GRAY.toString() + ChatColor.BOLD + "In Silent Mode");
+                scores.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "In Silent Mode");
             }
             scores.add(CC.SB_BAR);
         }

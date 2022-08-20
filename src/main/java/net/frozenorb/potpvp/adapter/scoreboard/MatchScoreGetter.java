@@ -5,6 +5,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import me.andyreckt.holiday.utils.CC;
+import net.frozenorb.potpvp.match.listener.MatchBoxingListener;
+import net.frozenorb.potpvp.profile.setting.Setting;
 import net.frozenorb.potpvp.util.PlayerUtils;
 import net.frozenorb.potpvp.util.TimeUtils;
 import net.frozenorb.potpvp.pvpclasses.pvpclasses.ArcherClass;
@@ -89,13 +92,9 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         // this method shouldn't have even been called if
         // they're not in a match
         if (match == null) {
-<<<<<<< HEAD
-            followingOpt.ifPresent(uuid -> scores.add("&fFollowing: &c" + PotPvPRP.getInstance().getUuidCache().name(uuid)));
-=======
             if (followingOpt.isPresent()) {
-                scores.add("&bFollowing: *&7" + PotPvPRP.getInstance().getUuidCache().name(followingOpt.get()));
+                scores.add("&bFollowing: &7" + PotPvPRP.getInstance().getUuidCache().name(followingOpt.get()));
             }
->>>>>>> master
 
             if (player.hasMetadata("ModMode")) {
                 scores.add(ChatColor.GRAY.toString() + ChatColor.BOLD + "In Silent Mode");
@@ -108,39 +107,35 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         }
 
         boolean participant = match.getTeam(player.getUniqueId()) != null;
-        boolean renderPing = false;
 
         renderMetaLines(scores, match, participant);
 
         if (participant) {
-            renderPing = renderParticipantLines(scores, match, player);
+            renderParticipantLines(scores, match, player);
+            if (PotPvPRP.getInstance().getSettingHandler().getSetting(player, Setting.SHOW_PING))
+                renderPingLines(scores, match, player);
         } else {
             MatchTeam previousTeam = match.getPreviousTeam(player.getUniqueId());
             renderSpectatorLines(scores, match, previousTeam);
         }
 
-        if (renderPing) {
-            renderPingLines(scores, match, player);
-        }
 
         // this definitely can be a .ifPresent, however creating the new lambda that often
         // was causing some performance issues, so we do this less pretty (but more efficient)
         // check (we can't define the lambda up top and reference because we reference the
         // scores variable)
-<<<<<<< HEAD
-=======
         if (followingOpt.isPresent()) {
             scores.add("&bFollowing: *&7" + PotPvPRP.getInstance().getUuidCache().name(followingOpt.get()));
         }
->>>>>>> master
 
-        followingOpt.ifPresent(uuid -> scores.add("&fFollowing: &c" + PotPvPRP.getInstance().getUuidCache().name(uuid)));
+        followingOpt.ifPresent(uuid -> scores.add("&fFollowing: &b" + PotPvPRP.getInstance().getUuidCache().name(uuid)));
     }
 
     private boolean renderParticipantLines(List<String> scores, Match match, Player player) {
         List<MatchTeam> teams = match.getTeams();
 
         // only render scoreboard if we have two teams
+
         if (teams.size() != 2) {
             return false;
         }
@@ -158,7 +153,6 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
 
         if (ourTeamSize == 1 && otherTeamSize == 1) {
             render1v1MatchLines(scores, otherTeam);
-            ping = true;
         } else if (ourTeamSize <= 2 && otherTeamSize <= 2) {
             render2v2MatchLines(scores, ourTeam, otherTeam, player, match.getKitType().getHealingMethod());
         } else if (ourTeamSize <= 4 && otherTeamSize <= 4) {
@@ -168,33 +162,29 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         } else {
             renderJumboMatchLines(scores, ourTeam, otherTeam);
         }
+        this.renderBoxingLines(scores, match, player, true);
 
         String archerMarkScore = getArcherMarkScore(player);
         String bardEffectScore = getBardEffectScore(player);
         String bardEnergyScore = getBardEnergyScore(player);
 
         if (archerMarkScore != null) {
-            scores.add(" &fArcher Mark&7: &c" + archerMarkScore);
+            scores.add(" &fArcher Mark&7: &b" + archerMarkScore);
         }
 
         if (bardEffectScore != null) {
-            scores.add(" &fBard Effect&7: &c" + bardEffectScore);
+            scores.add(" &fBard Effect&7: &b" + bardEffectScore);
         }
 
         if (bardEnergyScore != null) {
-<<<<<<< HEAD
-            scores.add(" &fBard Energy&7: &c" + bardEnergyScore);
-=======
-            scores.add("&d&lBard Energy&7: &c" + bardEnergyScore);
->>>>>>> master
+            scores.add("&b&lBard Energy&7: &b" + bardEnergyScore);
         }
 
         return ping;
     }
 
     private void render1v1MatchLines(List<String> scores, MatchTeam otherTeam) {
-        scores.add(" &fOpponent: &c" + PotPvPRP.getInstance().getUuidCache().name(otherTeam.getFirstMember()));
-
+        scores.add(" &fOpponent: &b" + PotPvPRP.getInstance().getUuidCache().name(otherTeam.getFirstMember()));
     }
 
     private void render2v2MatchLines(List<String> scores, MatchTeam ourTeam, MatchTeam otherTeam, Player player, HealingMethod healingMethod) {
@@ -261,19 +251,15 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
 
             scores.add(namePrefix + PotPvPRP.getInstance().getUuidCache().name(partnerUuid));
             scores.add(healthStr + healsStr);
-<<<<<<< HEAD
-            scores.add("");
-=======
-            scores.add("&d");
->>>>>>> master
+            scores.add("&b");
         }
 
-        scores.add(" &c&lOpponents");
+        scores.add(" &b&lOpponents");
         scores.addAll(renderTeamMemberOverviewLines(otherTeam));
 
         // Removes the space
         if (PotPvPRP.getInstance().getMatchHandler().getMatchPlaying(player).getState() == MatchState.IN_PROGRESS) {
-            scores.add("&c");
+            scores.add("&b");
         }
     }
 
@@ -281,16 +267,11 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         // Above a 2v2, but up to a 4v4.
         scores.add(" &fTeam &a(" + ourTeam.getAliveMembers().size() + "/" + ourTeam.getAllMembers().size() + ")");
         scores.addAll(renderTeamMemberOverviewLinesWithHearts(ourTeam));
-<<<<<<< HEAD
-        scores.add(" ");
-        scores.add(" &fOpponents &c(" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size() + ")");
-=======
-        scores.add("&d");
-        scores.add("&cOpponents &c(" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size() + ")");
->>>>>>> master
+        scores.add("&b");
+        scores.add("&bOpponents &b(" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size() + ")");
         scores.addAll(renderTeamMemberOverviewLines(otherTeam));
         if (PotPvPRP.getInstance().getMatchHandler().getMatchPlaying(Bukkit.getPlayer(ourTeam.getFirstAliveMember())).getState() == MatchState.IN_PROGRESS) {
-            scores.add("&c");
+            scores.add("&b");
         }
     }
 
@@ -298,24 +279,19 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         // We just display THEIR team's names, and the other team is a number.
         scores.add(" &fTeam &a(" + ourTeam.getAliveMembers().size() + "/" + ourTeam.getAllMembers().size() + ")");
         scores.addAll(renderTeamMemberOverviewLinesWithHearts(ourTeam));
-<<<<<<< HEAD
-        scores.add(" ");
-        scores.add(" &fOpponents: &c" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
-=======
-        scores.add("&d");
-        scores.add("&cOpponents: &f" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
->>>>>>> master
+        scores.add("&b");
+        scores.add("&bOpponents: &f" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
     }
 
     private void renderJumboMatchLines(List<String> scores, MatchTeam ourTeam, MatchTeam otherTeam) {
         // We just display numbers.
-        scores.add(" &fTeam: &c" + ourTeam.getAliveMembers().size() + "/" + ourTeam.getAllMembers().size());
-        scores.add(" &fOpponents: &c" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
+        scores.add(" &fTeam: &b" + ourTeam.getAliveMembers().size() + "/" + ourTeam.getAllMembers().size());
+        scores.add(" &fOpponents: &b" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
     }
 
     private void renderSpectatorLines(List<String> scores, Match match, MatchTeam oldTeam) {
         String rankedStr = match.isRanked() ? " (R)" : "";
-        scores.add(" &fKit: &c" + match.getKitType().getColoredDisplayName() + rankedStr);
+        scores.add(" &fKit: &b" + match.getKitType().getColoredDisplayName() + rankedStr);
 
         List<MatchTeam> teams = match.getTeams();
 
@@ -328,18 +304,15 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
                 // spectators who were on a team see teams as they relate
                 // to them, not just one/two.
                 if (oldTeam == null) {
-<<<<<<< HEAD
-                    scores.add(" &fTeam A: &c" + teamOne.getAliveMembers().size() + "/" + teamOne.getAllMembers().size());
-                    scores.add(" &fTeam B: &c" + teamTwo.getAliveMembers().size() + "/" + teamTwo.getAllMembers().size());
-=======
                     scores.add("&bTeam One: &f" + teamOne.getAliveMembers().size() + "/" + teamOne.getAllMembers().size());
-                    scores.add("&dTeam Two: &f" + teamTwo.getAliveMembers().size() + "/" + teamTwo.getAllMembers().size());
->>>>>>> master
+                    scores.add("&bTeam Two: &f" + teamTwo.getAliveMembers().size() + "/" + teamTwo.getAllMembers().size());
+                    this.renderBoxingLines(scores, match, Bukkit.getPlayer(teamOne.getFirstMember()), false);
                 } else {
                     MatchTeam otherTeam = oldTeam == teamOne ? teamTwo : teamOne;
 
-                    scores.add(" &fTeam: &c" + oldTeam.getAliveMembers().size() + "/" + oldTeam.getAllMembers().size());
-                    scores.add(" &fOpponents: &c" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
+                    scores.add(" &fTeam: &b" + oldTeam.getAliveMembers().size() + "/" + oldTeam.getAllMembers().size());
+                    scores.add(" &fOpponents: &b" + otherTeam.getAliveMembers().size() + "/" + otherTeam.getAllMembers().size());
+                    this.renderBoxingLines(scores, match, Bukkit.getPlayer(oldTeam.getFirstMember()), false);
                 }
             }
         }
@@ -365,13 +338,13 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         }
 
         // spectators don't have any bold entries on their scoreboard
-        scores.add("&c&lMatch");
-        scores.add(" &fDuration: &c" + formattedDuration);
+        scores.add("&b&lMatch");
+        scores.add(" &fDuration: &b" + formattedDuration);
     }
 
     private void renderPingLines(List<String> scores, Match match, Player ourPlayer) {
-        if (Boolean.TRUE) return;
         List<MatchTeam> teams = match.getTeams();
+        scores.add(" &fYour Ping: &b" + PlayerUtils.getPing(ourPlayer));
         if (teams.size() == 2) {
             MatchTeam firstTeam = teams.get(0);
             MatchTeam secondTeam = teams.get(1);
@@ -380,19 +353,9 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
             Set<UUID> secondTeamPlayers = secondTeam.getAllMembers();
 
             if (firstTeamPlayers.size() == 1 && secondTeamPlayers.size() == 1) {
-<<<<<<< HEAD
-                scores.add(" ");
-                scores.add(" &fYour Ping: &c" + PlayerUtils.getPing(ourPlayer));
                 Player otherPlayer = Bukkit.getPlayer(match.getTeam(ourPlayer.getUniqueId()) == firstTeam ? secondTeam.getFirstMember() : firstTeam.getFirstMember());
                 if (otherPlayer == null) return;
-                scores.add(" &fTheir Ping: &c" + PlayerUtils.getPing(otherPlayer));
-=======
-                scores.add("&7&d&4"); // spaceer
-                scores.add("&bYour Ping: &7" + PlayerUtils.getPing(ourPlayer));
-                Player otherPlayer = Bukkit.getPlayer(match.getTeam(ourPlayer.getUniqueId()) == firstTeam ? secondTeam.getFirstMember() : firstTeam.getFirstMember());
-                if (otherPlayer == null) return;
-                scores.add("&bTheir Ping: &7" + PlayerUtils.getPing(otherPlayer));
->>>>>>> master
+                scores.add(" &fTheir Ping: &b" + PlayerUtils.getPing(otherPlayer));
             }
         }
     }
@@ -512,5 +475,69 @@ final class MatchScoreGetter implements BiConsumer<Player, List<String>> {
         }
 
         return (null);
+    }
+
+    private void renderBoxingLines(final List<String> scores, final Match match, final Player ourPlayer, boolean participant) {
+        if (!match.getKitType().isBoxfight()) return;
+        scores.add(" ");
+        final Date startedAt=match.getStartedAt();
+        final Date endedAt=match.getEndedAt();
+        if (startedAt == null) {
+            return;
+        }
+
+        final List<MatchTeam> teams=match.getTeams();
+
+        if (match.getTeams().size() == 2) {
+            final MatchTeam firstTeam=teams.get(0);
+            final MatchTeam secondTeam=teams.get(1);
+            if (firstTeam.getAliveMembers().size() == 1 && secondTeam.getAliveMembers().size() == 1) {
+                final Player player1=Bukkit.getPlayer(firstTeam.getFirstMember());
+                final Player player2=Bukkit.getPlayer(firstTeam.getFirstMember());
+                final Player otherPlayer=Bukkit.getPlayer((match.getTeam(ourPlayer.getUniqueId()) == firstTeam) ? secondTeam.getFirstMember() : firstTeam.getFirstMember());
+                if (participant) {
+                    int ourPlayerHits= MatchBoxingListener.getHitMap().getOrDefault(ourPlayer.getUniqueId(), 0);
+                    int otherPlayerHits=MatchBoxingListener.getHitMap().getOrDefault(otherPlayer.getUniqueId(), 0);
+                    scores.add("&bHits " + (ourPlayerHits >= otherPlayerHits ? CC.GREEN : CC.RED) + "(" + (ourPlayerHits >= otherPlayerHits ? "+" : "-") + (ourPlayerHits >= otherPlayerHits ? String.valueOf(ourPlayerHits - otherPlayerHits) : String.valueOf(otherPlayerHits - ourPlayerHits)) + ")");
+                    scores.add(" &aYou: " + ourPlayerHits + (match.getCombos().getOrDefault(ourPlayer.getUniqueId(), 0) > 0 ? " &e(" + match.getCombos().get(ourPlayer.getUniqueId()) + " Combo)" : ""));
+                    scores.add(" &cThem: " + otherPlayerHits + (match.getCombos().getOrDefault(otherPlayer.getUniqueId(), 0) > 0 ? " &e(" + match.getCombos().get(otherPlayer.getUniqueId()) + " Combo)" : ""));
+                    scores.add("");
+                } else {
+                    int p1PlayerHits=MatchBoxingListener.getHitMap().getOrDefault(player1.getUniqueId(), 0);
+                    int p2PlayerHits=MatchBoxingListener.getHitMap().getOrDefault(player2.getUniqueId(), 0);
+                    scores.add("&bHits + " + (p1PlayerHits >= p2PlayerHits ? CC.GREEN : CC.RED) + "(" + (p1PlayerHits >= p2PlayerHits ? "+" : "-" + (p1PlayerHits >= p2PlayerHits ? String.valueOf(p1PlayerHits - p2PlayerHits) : String.valueOf(p2PlayerHits - p1PlayerHits))));
+                    scores.add(" &fPlayer One: " + p1PlayerHits + (match.getCombos().getOrDefault(player1.getUniqueId(), 0) > 0 ? " &e(" + match.getCombos().get(player1.getUniqueId()) + " Combo)" : ""));
+                    scores.add(" &fPlayer Two: " + p2PlayerHits + (match.getCombos().getOrDefault(player2.getUniqueId(), 0) > 0 ? " &e(" + match.getCombos().get(player2.getUniqueId()) + " Combo)" : ""));
+                    scores.add("");
+                }
+            } else {
+                if (participant) {
+                    final MatchTeam ourTeam=match.getTeam(ourPlayer.getUniqueId());
+                    final MatchTeam otherTeam=((firstTeam == ourTeam) ? secondTeam : firstTeam);
+                    int ourTHits=MatchBoxingListener.getHitMapTeam().getOrDefault(ourTeam, 0);
+                    int otherTHits=MatchBoxingListener.getHitMapTeam().getOrDefault(otherTeam, 0);
+                    scores.add("&bHits " + (ourTHits >= otherTHits ? CC.GREEN : CC.RED) + "(" + (ourTHits >= otherTHits ? "+" : "-") + (ourTHits >= otherTHits ? String.valueOf(ourTHits - otherTHits) : String.valueOf(otherTHits - ourTHits)) + ")");
+                    scores.add(" &aYour Team: " + ourTHits);
+                    scores.add(" &cThem: " + otherTHits);
+                    scores.add("");
+                } else {
+                    int t1Hits=MatchBoxingListener.getHitMapTeam().getOrDefault(firstTeam, 0);
+                    int t2Hits=MatchBoxingListener.getHitMapTeam().getOrDefault(secondTeam, 0);
+                    scores.add("&bHits + " + (t1Hits >= t2Hits ? CC.GREEN : CC.RED) + "(" + (t1Hits >= t2Hits ? "+" : "-" + (t1Hits >= t2Hits ? String.valueOf(t1Hits - t2Hits) : String.valueOf(t2Hits - t1Hits))));
+                    scores.add(" &fTeam One: " + t1Hits);
+                    scores.add(" &fTeam Two: " + t2Hits);
+                    scores.add("");
+                }
+            }
+        } else {
+            if (participant) {
+                int ourHits=MatchBoxingListener.getHitMap().getOrDefault(ourPlayer.getUniqueId(), 0);
+                scores.add("&aYour Hits: " + ourHits);
+                scores.add("");
+            } else {
+                scores.add("&fBoxing &dFFA");
+                scores.add("");
+            }
+        }
     }
 }
