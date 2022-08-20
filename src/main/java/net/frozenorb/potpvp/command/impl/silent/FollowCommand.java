@@ -18,7 +18,7 @@ import xyz.refinedev.command.annotation.Sender;
 public class FollowCommand implements PotPvPCommand {
 
     @Command(name = "", usage = "<target>", desc = "Follow a target as a staff member")
-    @Require("potpvp.staff.follow")
+    @Require("potpvp.follow")
     public void follow(@Sender Player sender, Player target) {
         if (!PotPvPValidation.canFollowSomeone(sender)) {
             return;
@@ -32,7 +32,7 @@ public class FollowCommand implements PotPvPCommand {
             sender.sendMessage(ChatColor.RED + "No, you can't follow yourself.");
             return;
         } else if (!settingHandler.getSetting(target, Setting.ALLOW_SPECTATORS)) {
-            if (sender.isOp()) {
+            if (sender.hasPermission("potpvp.staff.follow")) {
                 sender.sendMessage(ChatColor.RED + "Bypassing " + target.getName() + "'s no spectators preference...");
             } else {
                 sender.sendMessage(ChatColor.RED + target.getName() + " doesn't allow spectators at the moment.");

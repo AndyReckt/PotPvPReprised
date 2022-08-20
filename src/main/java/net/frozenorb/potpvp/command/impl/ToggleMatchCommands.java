@@ -12,7 +12,7 @@ import xyz.refinedev.command.annotation.Sender;
 
 public class ToggleMatchCommands implements PotPvPCommand {
 
-    @Command(name = "toggleMatches unranked", desc = "Toggle unranked matches")
+    @Command(name = "unranked", desc = "Toggle unranked matches")
     @Require("potpvp.togglematch.admin")
     public void toggleMatchesUnranked(@Sender Player sender) {
         MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();

@@ -2,6 +2,8 @@ package net.frozenorb.potpvp.command.impl.duel;
 
 import net.frozenorb.potpvp.PotPvPLang;
 import net.frozenorb.potpvp.PotPvPRP;
+import net.frozenorb.potpvp.arena.ArenaSchematic;
+import net.frozenorb.potpvp.arena.menu.select.SelectArenaMenu;
 import net.frozenorb.potpvp.command.PotPvPCommand;
 import net.frozenorb.potpvp.match.duel.DuelHandler;
 import net.frozenorb.potpvp.match.duel.DuelInvite;
@@ -55,7 +57,10 @@ public final class DuelCommand implements PotPvPCommand {
 
                 if (newSenderParty != null && newTargetParty != null) {
                     if (newSenderParty.isLeader(sender.getUniqueId())) {
-                        duel(sender, newSenderParty, newTargetParty, kitType);
+                        new SelectArenaMenu(kitType, arena -> {
+                            sender.closeInventory();
+                            duel(sender, newSenderParty, newTargetParty, kitType, arena);
+                        }, "Select an arena...").openMenu(sender);
                     } else {
                         sender.sendMessage(PotPvPLang.NOT_LEADER_OF_PARTY);
                     }
@@ -74,7 +79,10 @@ public final class DuelCommand implements PotPvPCommand {
 
             new SelectKitTypeMenu(kitType -> {
                 sender.closeInventory();
-                duel(sender, target, kitType);
+                new SelectArenaMenu(kitType, arena -> {
+                    sender.closeInventory();
+                    duel(sender, target, kitType, arena);
+                }, "Select an arena...").openMenu(sender);
             }, "Select a kit type...").openMenu(sender);
         } else if (senderParty == null) {
             // player dueling party (illegal)
@@ -85,8 +93,8 @@ public final class DuelCommand implements PotPvPCommand {
         }
     }
 
-    public void duel(@Sender Player sender, Player target, KitType kitType) {
-        if (!PotPvPValidation.canSendDuel(sender, target)) {
+    public void duel(@Sender Player sender, Player target, KitType kitType, ArenaSchematic arena) {
+        if (!PotPvPValidation.canSendDuel(sender, target, arena)) {
             return;
         }
 
@@ -104,7 +112,7 @@ public final class DuelCommand implements PotPvPCommand {
 
         if (alreadySentInvite != null) {
             if (alreadySentInvite.getKitType() == kitType) {
-                sender.sendMessage(ChatColor.YELLOW + "You have already invited " + ChatColor.AQUA + target.getName() + ChatColor.YELLOW + " to a " + kitType.getColoredDisplayName() + ChatColor.YELLOW + " duel.");
+                sender.sendMessage(ChatColor.WHITE + "You have already invited " + ChatColor.AQUA + target.getName() + ChatColor.WHITE + " to a " + kitType.getColoredDisplayName() + ChatColor.WHITE + " duel.");
                 return;
             } else {
                 // if an invite was already sent (with a different kit type)
@@ -113,15 +121,15 @@ public final class DuelCommand implements PotPvPCommand {
             }
         }
 
-        target.sendMessage(ChatColor.AQUA + sender.getName() + ChatColor.YELLOW + " has sent you a " + kitType.getColoredDisplayName() + ChatColor.YELLOW + " duel.");
+        target.sendMessage(ChatColor.AQUA + sender.getName() + ChatColor.WHITE + " has sent you a " + kitType.getColoredDisplayName() + ChatColor.WHITE + " duel on arena " + ChatColor.AQUA + arena.getName() + ChatColor.WHITE + ".");
         target.spigot().sendMessage(createInviteNotification(sender.getName()));
 
-        sender.sendMessage(ChatColor.YELLOW + "Successfully sent a " + kitType.getColoredDisplayName() + ChatColor.YELLOW + " duel invite to " + ChatColor.AQUA + target.getName() + ChatColor.YELLOW + ".");
-        duelHandler.insertInvite(new PlayerDuelInvite(sender, target, kitType));
+        sender.sendMessage(ChatColor.WHITE + "Successfully sent a " + kitType.getColoredDisplayName() + ChatColor.WHITE + " duel invite to " + ChatColor.AQUA + target.getName() + ChatColor.WHITE + ".");
+        duelHandler.insertInvite(new PlayerDuelInvite(sender, target, kitType, arena));
     }
 
-    public void duel(@Sender Player sender, Party senderParty, Party targetParty, KitType kitType) {
-        if (!PotPvPValidation.canSendDuel(senderParty, targetParty, sender)) {
+    public void duel(@Sender Player sender, Party senderParty, Party targetParty, KitType kitType, ArenaSchematic arena) {
+        if (!PotPvPValidation.canSendDuel(senderParty, targetParty, sender, arena)) {
             return;
         }
 
@@ -140,7 +148,7 @@ public final class DuelCommand implements PotPvPCommand {
 
         if (alreadySentInvite != null) {
             if (alreadySentInvite.getKitType() == kitType) {
-                sender.sendMessage(ChatColor.YELLOW + "You have already invited " + ChatColor.AQUA + targetPartyLeader + "'s party" + ChatColor.YELLOW + " to a " + kitType.getColoredDisplayName() + ChatColor.YELLOW + " duel.");
+                sender.sendMessage(ChatColor.WHITE + "You have already invited " + ChatColor.AQUA + targetPartyLeader + "'s party" + ChatColor.WHITE + " to a " + kitType.getColoredDisplayName() + ChatColor.WHITE + " duel.");
                 return;
             } else {
                 // if an invite was already sent (with a different kit type)
@@ -149,35 +157,24 @@ public final class DuelCommand implements PotPvPCommand {
             }
         }
 
-        targetParty.message(ChatColor.AQUA + sender.getName() + "'s Party (" + senderParty.getMembers().size() + ")" + ChatColor.YELLOW + " has sent you a " + kitType.getColoredDisplayName() + ChatColor.YELLOW + " duel.");
+        targetParty.message(ChatColor.AQUA + sender.getName() + "'s Party (" + senderParty.getMembers().size() + ")" + ChatColor.WHITE + " has sent you a " + kitType.getColoredDisplayName() + ChatColor.WHITE + " duel on arena " + ChatColor.AQUA + arena.getName() + ChatColor.WHITE + ".");
         Bukkit.getPlayer(targetParty.getLeader()).spigot().sendMessage(createInviteNotification(sender.getName()));
 
-        sender.sendMessage(ChatColor.YELLOW + "Successfully sent a " + kitType.getColoredDisplayName() + ChatColor.YELLOW + " duel invite to " + ChatColor.AQUA + targetPartyLeader + "'s party" + ChatColor.YELLOW + ".");
-        duelHandler.insertInvite(new PartyDuelInvite(senderParty, targetParty, kitType));
+        sender.sendMessage(ChatColor.WHITE + "Successfully sent a " + kitType.getColoredDisplayName() + ChatColor.WHITE + " duel invite to " + ChatColor.AQUA + targetPartyLeader + "'s party" + ChatColor.WHITE + ".");
+        duelHandler.insertInvite(new PartyDuelInvite(senderParty, targetParty, kitType, arena));
     }
 
     private TextComponent[] createInviteNotification(String sender) {
-        TextComponent firstPart = new TextComponent("Click here or type ");
-        TextComponent commandPart = new TextComponent("/accept " + sender);
-        TextComponent secondPart = new TextComponent(" to accept the invite");
+        TextComponent firstPart = new TextComponent("Click here or type " + "/accept " + sender + " to accept the duel.");
 
-        firstPart.setColor(net.md_5.bungee.api.ChatColor.DARK_PURPLE);
-        commandPart.setColor(net.md_5.bungee.api.ChatColor.AQUA);
-        secondPart.setColor(net.md_5.bungee.api.ChatColor.DARK_PURPLE);
-
+        firstPart.setColor(net.md_5.bungee.api.ChatColor.GREEN);
         ClickEvent.Action runCommand = ClickEvent.Action.RUN_COMMAND;
         HoverEvent.Action showText = HoverEvent.Action.SHOW_TEXT;
 
         firstPart.setClickEvent(new ClickEvent(runCommand, "/accept " + sender));
         firstPart.setHoverEvent(new HoverEvent(showText, new BaseComponent[] { new TextComponent(ChatColor.GREEN + "Click here to accept") }));
 
-        commandPart.setClickEvent(new ClickEvent(runCommand, "/accept " + sender));
-        commandPart.setHoverEvent(new HoverEvent(showText, new BaseComponent[] { new TextComponent(ChatColor.GREEN + "Click here to accept") }));
-
-        secondPart.setClickEvent(new ClickEvent(runCommand, "/accept " + sender));
-        secondPart.setHoverEvent(new HoverEvent(showText, new BaseComponent[] { new TextComponent(ChatColor.GREEN + "Click here to accept") }));
-
-        return new TextComponent[] { firstPart, commandPart, secondPart };
+        return new TextComponent[] { firstPart};
     }
 
     @Override

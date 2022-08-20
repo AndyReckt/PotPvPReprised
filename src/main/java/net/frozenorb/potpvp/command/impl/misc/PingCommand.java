@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import xyz.refinedev.command.annotation.Command;
 import xyz.refinedev.command.annotation.OptArg;
 import xyz.refinedev.command.annotation.Sender;
+import xyz.refinedev.spigot.utils.CC;
 
 import java.util.UUID;
 
@@ -34,9 +35,9 @@ public class PingCommand implements PotPvPCommand {
                 }
             }
         } else if (target == null) {
-            sender.sendMessage(sender.getDisplayName() + ChatColor.YELLOW + "'s Ping: " + ChatColor.GREEN + ping + "ms");
+            sender.sendMessage(CC.translate(sender.getDisplayName()) + ChatColor.YELLOW + "'s Ping: " + ChatColor.GREEN + ping + "ms");
         } else {
-            sender.sendMessage(target.getDisplayName() + ChatColor.YELLOW + "'s Ping: " + ChatColor.GREEN + ping + "ms");
+            sender.sendMessage(CC.translate(target.getDisplayName()) + ChatColor.YELLOW + "'s Ping: " + ChatColor.GREEN + ping + "ms");
         }
     }
 

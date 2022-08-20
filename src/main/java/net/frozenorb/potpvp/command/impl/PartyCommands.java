@@ -2,6 +2,7 @@ package net.frozenorb.potpvp.command.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import me.andyreckt.holiday.Holiday;
 import net.frozenorb.potpvp.PotPvPLang;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.command.PotPvPCommand;
@@ -24,6 +25,7 @@ import xyz.refinedev.command.annotation.Command;
 import xyz.refinedev.command.annotation.OptArg;
 import xyz.refinedev.command.annotation.Require;
 import xyz.refinedev.command.annotation.Sender;
+import xyz.refinedev.spigot.utils.CC;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,26 +48,26 @@ public class PartyCommands implements PotPvPCommand {
     private static final String NO_PASSWORD_PROVIDED = "skasjkdasdjhksahjd";
 
     private static final List<String> HELP_MESSAGE = ImmutableList.of(
-            ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
+            ChatColor.GRAY + PotPvPLang.LONG_LINE,
             "§d§lParty Help §7- §fInformation on how to use party commands",
-            ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
-            "§9Party Commands:",
-            "§e/party invite §7- Invite a player to join your party",
-            "§e/party leave §7- Leave your current party",
-            "§e/party accept [player] §7- Accept party invitation",
-            "§e/party info [player] §7- View the roster of the party",
+            ChatColor.GRAY + PotPvPLang.LONG_LINE,
+            "§dParty Commands:",
+            "§f/party invite §7- Invite a player to join your party",
+            "§f/party leave §7- Leave your current party",
+            "§f/party accept [player] §7- Accept party invitation",
+            "§f/party info [player] §7- View the roster of the party",
             "",
-            "§9Leader Commands:",
-            "§e/party kick <player> §7- Kick a player from your party",
-            "§e/party leader <player> §7- Transfer party leadership",
-            "§e/party disband §7 - Disbands party",
-            "§e/party lock §7 - Lock party from others joining",
-            "§e/party open §7 - Open party to others joining",
-            "§e/party password <password> §7 - Sets party password",
+            "§dLeader Commands:",
+            "§f/party kick <player> §7- Kick a player from your party",
+            "§f/party leader <player> §7- Transfer party leadership",
+            "§f/party disband §7 - Disbands party",
+            "§f/party lock §7 - Lock party from others joining",
+            "§f/party open §7 - Open party to others joining",
+            "§f/party password <password> §7 - Sets party password",
             "",
-            "§9Other Help:",
-            "§eTo use §dparty chat§e, prefix your message with the §7'§d!§7' §esign.",
-            ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE
+            "§dOther Help:",
+            "§fTo use §bparty chat§f, prefix your message with the §7'§b!§7' §fsign.",
+            ChatColor.GRAY + PotPvPLang.LONG_LINE
     );
 
     @Command(name = "", aliases = "help", desc = "View party commands")
@@ -201,7 +203,7 @@ public class PartyCommands implements PotPvPCommand {
             return;
         }
 
-        String leaderName = PotPvPRP.getInstance().getUuidCache().name(party.getLeader());
+        String leaderName = CC.translate(Holiday.getInstance().getProfileHandler().getByUUID(party.getLeader()).getDisplayNameWithColor());
         int memberCount = party.getMembers().size();
         String members = Joiner.on(", ").join(PatchedPlayerUtils.mapToNames(party.getMembers()));
 

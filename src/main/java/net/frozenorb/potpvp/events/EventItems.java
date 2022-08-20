@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 import static net.md_5.bungee.api.ChatColor.LIGHT_PURPLE;
+import static xyz.refinedev.command.util.CC.AQUA;
 
 @UtilityClass
 public final class EventItems {
@@ -19,7 +20,7 @@ public final class EventItems {
         List<Game> game = PotPvPRP.getInstance().getGameHandler().getCurrentGames();
 
         if (game.size() > 0) {
-            return ItemBuilder.of(Material.EMERALD).name(LIGHT_PURPLE + "Join An Event").build();
+            return ItemBuilder.of(Material.EMERALD).name(AQUA + "Join An Event").build();
         }
 
         return null;

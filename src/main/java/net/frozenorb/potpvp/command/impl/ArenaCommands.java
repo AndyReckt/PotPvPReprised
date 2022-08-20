@@ -1,5 +1,6 @@
 package net.frozenorb.potpvp.command.impl;
 
+import lombok.SneakyThrows;
 import net.frozenorb.potpvp.PotPvPLang;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.arena.Arena;
@@ -16,6 +17,7 @@ import xyz.refinedev.command.annotation.Sender;
 import xyz.refinedev.spigot.utils.CC;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This Project is property of Refine Development © 2021 - 2022
@@ -28,24 +30,24 @@ import java.io.File;
 public class ArenaCommands implements PotPvPCommand {
 
     private static final String[] HELP_MESSAGE = {
-            ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
-            "§5§lArena Commands",
-            ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
+            ChatColor.GRAY + PotPvPLang.LONG_LINE,
+            "§d§lArena Commands",
+            ChatColor.GRAY + PotPvPLang.LONG_LINE,
             "§c " + PotPvPLang.LEFT_ARROW_NAKED + " §a/arena free",
             "§c " + PotPvPLang.LEFT_ARROW_NAKED + " §a/arena createSchematic <schematic>",
             "§c " + PotPvPLang.LEFT_ARROW_NAKED + " §a/arena listArenas <schematic>",
             "§c " + PotPvPLang.LEFT_ARROW_NAKED + " §a/arena repasteSchematic <schematic>",
             "§c " + PotPvPLang.LEFT_ARROW_NAKED + " §a/arena rescaleall <schematic>",
             "§c " + PotPvPLang.LEFT_ARROW_NAKED + " §a/arena listSchematics",
-            ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
+            ChatColor.GRAY + PotPvPLang.LONG_LINE,
 
     };
 
-    @Command(name = "", desc = "Help message for arenas")
-    @Require("potpvp.arena.admin")
-    public void help(@Sender Player sender) {
-        sender.sendMessage(HELP_MESSAGE);
-    }
+//    @Command(name = "", desc = "Help message for arenas")
+//    @Require("potpvp.arena.admin")
+//    public void help(@Sender Player sender) {
+//        sender.sendMessage(HELP_MESSAGE);
+//    }
 
     @Command(name = "free", desc = "Free all arenas")
     @Require("potpvp.arena.admin")
@@ -139,7 +141,7 @@ public class ArenaCommands implements PotPvPCommand {
     }
 
     @Command(name = "scale", usage = "<schematic> <count>", desc = "Scale schematics to a specific size")
-    @Require("potpvp.arena.admin")
+    @Require("potpvp.arena.admin") @SneakyThrows
     public void arenaScale(@Sender Player sender, String schematicName, int count) {
         ArenaHandler arenaHandler = PotPvPRP.getInstance().getArenaHandler();
         ArenaSchematic schematic = arenaHandler.getSchematic(schematicName);
@@ -150,7 +152,12 @@ public class ArenaCommands implements PotPvPCommand {
             return;
         }
 
-        sender.sendMessage(ChatColor.GREEN + "Starting...");
+        while (arenaHandler.getGrid().isBusy()) {
+            sender.sendMessage(ChatColor.RED + "Arena grid is busy, please wait...");
+            wait(TimeUnit.SECONDS.toMillis(5));
+        }
+
+        sender.sendMessage(ChatColor.GREEN + "Starting rescaling of " + schematic.getName() + " to " + count + " copies...");
 
         arenaHandler.getGrid().scaleCopies(schematic, count, () -> {
             sender.sendMessage(ChatColor.GREEN + "Scaled " + schematic.getName() + " to " + count + " copies.");
@@ -173,14 +180,36 @@ public class ArenaCommands implements PotPvPCommand {
     @Require("potpvp.arena.admin")
     public void arenaListSchems(@Sender Player sender) {
         ArenaHandler arenaHandler = PotPvPRP.getInstance().getArenaHandler();
-        sender.sendMessage(ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE);
-        sender.sendMessage(CC.translate("&5&lPotPvP Schematics"));
-        sender.sendMessage(ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE);
+        sender.sendMessage(ChatColor.GRAY + PotPvPLang.LONG_LINE);
+        sender.sendMessage(CC.translate("&d&lPotPvP Schematics"));
+        sender.sendMessage(ChatColor.GRAY + PotPvPLang.LONG_LINE);
         arenaHandler.getSchematics().forEach(schematic -> {
             int size = arenaHandler.getArenas(schematic).size();
             sender.sendMessage(CC.translate("&c" + schematic.getName() + " &7| &cArenas using: &f" + size));
         });
-        sender.sendMessage(ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE);
+        sender.sendMessage(ChatColor.GRAY + PotPvPLang.LONG_LINE);
+    }
+
+    @Command(name = "setIcon", aliases = "icon", usage = "<schematic>", desc = "Set the icon for an arena")
+    @Require("potpvp.arena.admin") @SneakyThrows
+    public void icon(@Sender Player sender, String schematicName) {
+        ArenaHandler arenaHandler = PotPvPRP.getInstance().getArenaHandler();
+        ArenaSchematic schematic = arenaHandler.getSchematic(schematicName);
+
+        if (schematic == null) {
+            sender.sendMessage(ChatColor.RED + "Schematic " + schematicName + " not found.");
+            sender.sendMessage(ChatColor.RED + "List all schematics with /arena listSchematics");
+            return;
+        }
+
+        if (sender.getItemInHand() == null) {
+            sender.sendMessage(ChatColor.RED + "Please hold an item in your hand.");
+            return;
+        }
+
+        schematic.setIcon(sender.getItemInHand().getData());
+        PotPvPRP.getInstance().getArenaHandler().saveSchematics();
+        sender.sendMessage(ChatColor.GREEN + "You've updated this arena's icon.");
     }
 
     @Override

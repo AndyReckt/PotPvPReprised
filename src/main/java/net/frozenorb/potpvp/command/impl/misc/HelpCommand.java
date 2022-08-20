@@ -21,38 +21,37 @@ import java.util.List;
 public class HelpCommand implements PotPvPCommand {
 
     private static final List<String> HELP_MESSAGE_HEADER = ImmutableList.of(
-        ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
-        "§5§lPractice Help",
-        ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE,
-        "§7§lRemember: §eMost things are clickable!",
+        ChatColor.GRAY + PotPvPLang.LONG_LINE,
+        "§d§lPractice Help",
+        ChatColor.GRAY + PotPvPLang.LONG_LINE,
+        "§7§lRemember: §fMost things are clickable!",
         ""
     );
 
     private static final List<String> HELP_MESSAGE_LOBBY = ImmutableList.of(
-        "§5Common Commands:",
-        "§e/duel <player> §7- Challenge a player to a duel",
-        "§e/party invite <player> §7- Invite a player to a party",
+        "§bCommon Commands:",
+        "§f/duel <player> §7- Challenge a player to a duel",
+        "§f/party invite <player> §7- Invite a player to a party",
         "",
-        "§5Other Commands:",
-        "§e/party help §7- Information on party commands",
-        "§e/report <player> <reason> §7- Report a player for violating the rules",
-        "§e/request <message> §7- Request assistance from a staff member"
+        "§bOther Commands:",
+        "§f/party help §7- Information on party commands",
+        "§f/report <player> <reason> §7- Report a player for violating the rules",
+        "§f/request <message> §7- Request assistance from a staff member"
     );
 
     private static final List<String> HELP_MESSAGE_MATCH = ImmutableList.of(
-        "§5Common Commands:",
-        "§e/spectate <player> §7- Spectate a player in a match",
-        "§e/report <player> <reason> §7- Report a player for violating the rules",
-        "§e/request <message> §7- Request assistance from a staff member"
+        "§bCommon Commands:",
+        "§f/spectate <player> §7- Spectate a player in a match",
+        "§f/report <player> <reason> §7- Report a player for violating the rules",
+        "§f/request <message> §7- Request assistance from a staff member"
     );
 
     private static final List<String> HELP_MESSAGE_FOOTER = ImmutableList.of(
         "",
-        "§5Server Information:",
-        PotPvPRP.getInstance().getDominantColor() == ChatColor.LIGHT_PURPLE ? "§eOfficial Teamspeak §7- §dts.MineHQ.com" : "§eOfficial Teamspeak §7- §dts.MineHQ.com",
-        PotPvPRP.getInstance().getDominantColor() == ChatColor.LIGHT_PURPLE ? "§eOfficial Rules §7- §dwww.MineHQ.com/rules" : "§eOfficial Rules §7- §dwww.MineHQ.com/rules",
-        PotPvPRP.getInstance().getDominantColor() == ChatColor.LIGHT_PURPLE ? "§eStore §7- §dwww.MineHQ.com/store" : "§eStore §7- §dwww.MineHQ.com/store",
-        ChatColor.DARK_PURPLE + PotPvPLang.LONG_LINE
+        "§bServer Information:",
+        "§fDiscord §7- §bdiscord.gg/causalmc",
+        "§fStore §7- §bstore.causalmc.cc",
+        ChatColor.GRAY + PotPvPLang.LONG_LINE
     );
 
     @Command(name = "", desc = "Help message override")

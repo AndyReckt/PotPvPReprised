@@ -15,7 +15,7 @@ import xyz.refinedev.command.annotation.Sender;
 public class UnfollowCommand implements PotPvPCommand {
 
     @Command(name = "", desc = "Unfollow the target you are currently following")
-    @Require("potpvp.staff.follow")
+    @Require("potpvp.follow")
     public void unfollow(@Sender Player sender) {
         FollowHandler followHandler = PotPvPRP.getInstance().getFollowHandler();
         MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();

@@ -20,7 +20,7 @@ public class MatchCommands implements PotPvPCommand {
         MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
 
         for (Match match : matchHandler.getHostedMatches()) {
-            sender.sendMessage(ChatColor.RED + match.getSimpleDescription(true));
+            sender.sendMessage(ChatColor.AQUA + match.getSimpleDescription(true));
         }
     }
 

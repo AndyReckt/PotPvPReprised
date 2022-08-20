@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class TournamentCommands implements PotPvPCommand {
     
     @Command(name = "start", usage= "<kitType> <teamSize> <requiredTeams>", desc = "Host a tournament")
-    @Require("tournament.create")
+    @Require("potpvp.tournament.create")
     public void tournamentCreate(@Sender CommandSender sender, KitType type, int teamSize, int requiredTeams) {
         if (PotPvPRP.getInstance().getTournamentHandler().getTournament() != null) {
             sender.sendMessage(ChatColor.RED + "There's already an ongoing tournament!");
@@ -58,7 +58,7 @@ public class TournamentCommands implements PotPvPCommand {
         }
 
         Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7A &c&ltournament&7 has started. Type &5/join&7 to play. (0/" + (teamSize < 3 ? teamSize * requiredTeams : requiredTeams) + ")"));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7A &b&lTournament&7 has started. Type &b/t join&7 to play. (0/" + (teamSize < 3 ? teamSize * requiredTeams : requiredTeams) + ")"));
         Bukkit.broadcastMessage("");
 
         Tournament tournament;
@@ -180,7 +180,7 @@ public class TournamentCommands implements PotPvPCommand {
         }
 
         Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7The &c&ltournament&7 was &ccancelled."));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7The &b&lTournament&7 was &ccancelled."));
         Bukkit.broadcastMessage("");
         PotPvPRP.getInstance().getTournamentHandler().setTournament(null);
     }
