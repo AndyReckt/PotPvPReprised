@@ -28,6 +28,7 @@ import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import net.frozenorb.potpvp.PotPvPRP;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 public final class BasicPreventionListener implements Listener {
 
@@ -156,6 +157,11 @@ public final class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onCraft(CraftItemEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event) {
         event.setCancelled(true);
     }
 

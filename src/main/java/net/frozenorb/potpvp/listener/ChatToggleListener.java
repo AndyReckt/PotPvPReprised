@@ -10,7 +10,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public final class ChatToggleListener implements Listener {
 
-    @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         // players always see messages sent by ops
         if (event.getPlayer().isOp()) {

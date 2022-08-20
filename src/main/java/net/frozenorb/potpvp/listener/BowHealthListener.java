@@ -6,6 +6,7 @@ import net.frozenorb.potpvp.match.MatchHandler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -33,10 +34,10 @@ public final class BowHealthListener implements Listener {
                     return;
                 }
 
-                int outOf20 = (int) Math.ceil(hit.getHealth());
+                int outOf100 = (int) ((hit.getHealth() + ((CraftPlayer) hit).getHandle().getAbsorptionHearts()) * 5);
                 // we specifically divide by 2.0 (not 2) so that we do floating point math
                 // as integer math will just round away the .5
-                damager.sendMessage(ChatColor.GOLD + hit.getName() + "'s health: " + ChatColor.RED.toString() + (outOf20 / 2.0) + ChatColor.DARK_RED + "❤");
+                damager.sendMessage(ChatColor.AQUA + hit.getName() + ChatColor.WHITE +"'s health: " + ChatColor.GREEN + (outOf100) + "%");
             }, 1L);
         }
     }
