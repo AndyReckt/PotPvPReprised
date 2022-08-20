@@ -9,6 +9,7 @@ import net.frozenorb.potpvp.events.EventItems;
 import net.frozenorb.potpvp.party.Party;
 import net.frozenorb.potpvp.party.PartyHandler;
 import net.frozenorb.potpvp.party.PartyItems;
+import net.frozenorb.potpvp.profile.setting.Setting;
 import net.frozenorb.potpvp.queue.QueueHandler;
 import net.frozenorb.potpvp.queue.QueueItems;
 import net.frozenorb.potpvp.match.rematch.RematchData;
@@ -48,6 +49,7 @@ public final class LobbyUtils {
         }
 
         Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(), player::updateInventory, 1L);
+        player.setAllowFlight(PotPvPRP.getInstance().getSettingHandler().getSetting(player, Setting.FLY_IN_LOBBY));
     }
 
     private void renderPartyItems(Player player, PlayerInventory inventory, Party party) {
@@ -56,25 +58,31 @@ public final class LobbyUtils {
         if (party.isLeader(player.getUniqueId())) {
             int partySize = party.getMembers().size();
 
-            if (partySize == 2) {
-                if (!queueHandler.isQueuedUnranked(party)) {
-                    inventory.setItem(1, QueueItems.JOIN_PARTY_UNRANKED_QUEUE_ITEM);
-                    inventory.setItem(3, PartyItems.ASSIGN_CLASSES);
-                } else {
-                    inventory.setItem(1, QueueItems.LEAVE_PARTY_UNRANKED_QUEUE_ITEM);
-                }
-
-                if (!queueHandler.isQueuedRanked(party)) {
-                    inventory.setItem(2, QueueItems.JOIN_PARTY_RANKED_QUEUE_ITEM);
-                    inventory.setItem(3, PartyItems.ASSIGN_CLASSES);
-                } else {
-                    inventory.setItem(2, QueueItems.LEAVE_PARTY_RANKED_QUEUE_ITEM);
-                }
-            } else if (partySize > 2 && !queueHandler.isQueued(party)) {
+//            if (partySize == 2) {
+//                if (!queueHandler.isQueuedUnranked(party)) {
+//                    inventory.setItem(1, QueueItems.JOIN_PARTY_UNRANKED_QUEUE_ITEM);
+//                    inventory.setItem(3, PartyItems.ASSIGN_CLASSES);
+//                } else {
+//                    inventory.setItem(1, QueueItems.LEAVE_PARTY_UNRANKED_QUEUE_ITEM);
+//                }
+//
+//                if (!queueHandler.isQueuedRanked(party)) {
+//                    inventory.setItem(2, QueueItems.JOIN_PARTY_RANKED_QUEUE_ITEM);
+//                    inventory.setItem(3, PartyItems.ASSIGN_CLASSES);
+//                } else {
+//                    inventory.setItem(2, QueueItems.LEAVE_PARTY_RANKED_QUEUE_ITEM);
+//                }
+//            } else if (partySize > 2 && !queueHandler.isQueued(party)) {
+//                inventory.setItem(1, PartyItems.START_TEAM_SPLIT_ITEM);
+//                inventory.setItem(2, PartyItems.START_FFA_ITEM);
+//                inventory.setItem(3, PartyItems.ASSIGN_CLASSES);
+//            }
+            if (partySize > 1 && !queueHandler.isQueued(party)) {
                 inventory.setItem(1, PartyItems.START_TEAM_SPLIT_ITEM);
                 inventory.setItem(2, PartyItems.START_FFA_ITEM);
-                inventory.setItem(3, PartyItems.ASSIGN_CLASSES);
+                inventory.setItem(4, PartyItems.ASSIGN_CLASSES);
             }
+
 
         } else {
             int partySize = party.getMembers().size();
@@ -99,7 +107,7 @@ public final class LobbyUtils {
         boolean specMode = lobbyHandler.isInSpectatorMode(player);
         boolean followingSomeone = followHandler.getFollowing(player).isPresent();
 
-        player.setAllowFlight(player.getGameMode() == GameMode.CREATIVE || specMode);
+        player.setAllowFlight(player.getGameMode() == GameMode.CREATIVE || specMode || PotPvPRP.getInstance().getSettingHandler().getSetting(player, Setting.FLY_IN_LOBBY));
 
         if (specMode || followingSomeone) {
             inventory.setItem(5, LobbyItems.SPECTATE_MENU_ITEM);
@@ -137,25 +145,28 @@ public final class LobbyUtils {
                 inventory.setItem(0, QueueItems.JOIN_SOLO_UNRANKED_QUEUE_ITEM);
                 inventory.setItem(1, QueueItems.JOIN_SOLO_RANKED_QUEUE_ITEM);
                 inventory.setItem(4, LobbyItems.ENABLE_SPEC_MODE_ITEM);
+                inventory.setItem(7, LobbyItems.PARTY_ITEM);
                 inventory.setItem(8, KitItems.OPEN_EDITOR_ITEM);
 
                 ItemStack eventItem = EventItems.getEventItem();
-
-                if (player.hasPermission("potpvp.admin")) {
-                    if (eventItem != null) {
-                        inventory.setItem(5, LobbyItems.PLAYER_STATISTICS);
-                        inventory.setItem(6, eventItem);
-                    } else {
-                        inventory.setItem(6, LobbyItems.PLAYER_STATISTICS);
-                    }
-
-                    inventory.setItem(7, LobbyItems.MANAGE_ITEM);
-                } else {
-                    if (eventItem != null) {
-                        inventory.setItem(6, LobbyItems.PLAYER_STATISTICS);
-                        inventory.setItem(7, eventItem);
-                    }
+                if (eventItem != null) {
+                    inventory.setItem(4, eventItem);
                 }
+//                if (player.hasPermission("potpvp.admin")) {
+//                    if (eventItem != null) {
+//                        inventory.setItem(5, LobbyItems.PLAYER_STATISTICS);
+//                        inventory.setItem(6, eventItem);
+//                    } else {
+//                        inventory.setItem(6, LobbyItems.PLAYER_STATISTICS);
+//                    }
+//
+//                    inventory.setItem(7, LobbyItems.MANAGE_ITEM);
+//                } else {
+//                    if (eventItem != null) {
+//                        inventory.setItem(6, LobbyItems.PLAYER_STATISTICS);
+//                        inventory.setItem(7, eventItem);
+//                    }
+//                }
             }
         }
     }

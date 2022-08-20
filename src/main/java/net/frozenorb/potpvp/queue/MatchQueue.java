@@ -112,19 +112,38 @@ public final class MatchQueue {
 
             if (ranked) {
                 EloHandler eloHandler = PotPvPRP.getInstance().getEloHandler();
+                int eloA = eloHandler.getElo(teamA.getAliveMembers(), kitType);
+                int eloB = eloHandler.getElo(teamB.getAliveMembers(), kitType);
 
-                teamAElo = " (" + eloHandler.getElo(teamA.getAliveMembers(), kitType) + " Elo)";
-                teamBElo = " (" + eloHandler.getElo(teamB.getAliveMembers(), kitType) + " Elo)";
+
+                teamAElo = " " + eloA + " Elo " + eloDiff(eloA, eloB);
+                teamBElo = " " + eloB + " Elo " + eloDiff(eloB, eloA);
             }
 
-            String foundStart = ChatColor.RED.toString() + ChatColor.BOLD + "Match found!" + ChatColor.WHITE + " Opponent: " + ChatColor.RED;
+            StringBuilder sb = new StringBuilder("\n");
+            sb.append(ChatColor.LIGHT_PURPLE).append("Match found!");
+            sb.append("\n\n");
+            sb.append(ChatColor.WHITE).append("Kit: ").append(ChatColor.AQUA).append(kitType.getDisplayName());
+            sb.append("\n");
+            sb.append(ChatColor.WHITE).append("Arena: ").append(ChatColor.AQUA).append(match.getArena().getSchematic());
+            sb.append("\n");
+            teamA.messageAlive(sb.toString());
+            teamB.messageAlive(sb.toString());
 
-            teamA.messageAlive(foundStart + Joiner.on(", ").join(PatchedPlayerUtils.mapToNames(teamB.getAllMembers())) + teamBElo);
-            teamB.messageAlive(foundStart + Joiner.on(", ").join(PatchedPlayerUtils.mapToNames(teamA.getAllMembers())) + teamAElo);
-            
+            if (ranked) {
+                teamB.messageAlive(ChatColor.WHITE + "Elo: " + ChatColor.AQUA + teamAElo + "\n");
+                teamA.messageAlive(ChatColor.WHITE + "Elo: " + ChatColor.AQUA + teamBElo + "\n");
+            }
+            match.messageAlive("\n");
+
             entries.remove(entryA);
             entries.remove(entryB);
         }
+    }
+
+    private String eloDiff(int elo1, int elo2) {
+        if (elo1 > elo2) return ChatColor.GREEN + "(+" + (elo1 - elo2) + ")";
+        else return ChatColor.RED + "(-" + (elo2 - elo1) + ")";
     }
 
 }

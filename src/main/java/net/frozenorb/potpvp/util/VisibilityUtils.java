@@ -66,7 +66,7 @@ public final class VisibilityUtils {
             boolean viewerPlayingMatch = matchHandler.isPlayingOrSpectatingMatch(viewer);
             boolean viewerSameParty = targetParty != null && targetParty.isMember(viewer.getUniqueId());
             boolean viewerFollowingTarget = following.isPresent() && following.get().equals(target.getUniqueId());
-            boolean targetIsRanked = settingHandler.getSetting(viewer, Setting.PLAYERS_IN_LOBBY) && target.hasPermission("potpvp.donator") ;
+            boolean targetIsRanked = (settingHandler.getSetting(viewer, Setting.PLAYERS_IN_LOBBY) && target.hasPermission("potpvp.donator"));
 
             return !targetStaffMode && (viewerPlayingMatch || viewerSameParty || viewerFollowingTarget || targetIsRanked);
         } else {

@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import me.andyreckt.holiday.utils.CC;
+import net.frozenorb.potpvp.kit.Kit;
+import net.frozenorb.potpvp.util.uuid.UUIDCache;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,7 +33,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -103,7 +105,10 @@ public final class Match {
 
     private Set<UUID> winningPlayers;
     private Set<UUID> losingPlayers;
-    
+
+    private Map<MatchTeam, Integer> wins = Maps.newHashMap();
+    private Map<UUID, Kit> usedKit = Maps.newHashMap();
+
     public Match(KitType kitType, Arena arena, List<MatchTeam> teams, boolean ranked, boolean allowRematches) {
         this.kitType = Preconditions.checkNotNull(kitType, "kitType");
         this.arena = Preconditions.checkNotNull(arena, "arena");
@@ -137,7 +142,7 @@ public final class Match {
                 
                 Location spawn = (team == teams.get(0) ? arena.getTeam1Spawn() : arena.getTeam2Spawn()).clone();
                 Vector oldDirection = spawn.getDirection();
-                
+                if (!spawn.getChunk().isLoaded()) spawn.getChunk().load();
                 Block block = spawn.getBlock();
                 while (block.getRelative(BlockFace.DOWN).getType() == Material.AIR) {
                     block = block.getRelative(BlockFace.DOWN);
@@ -168,7 +173,7 @@ public final class Match {
         
         new BukkitRunnable() {
             
-            int countdownTimeRemaining = kitType.getId().equals("SUMO") ? 5 : 5;
+            int countdownTimeRemaining = kitType.isSumo() ? 3 : 5;
             
             public void run() {
                 if (state != MatchState.COUNTDOWN) {
@@ -184,7 +189,7 @@ public final class Match {
                     playSoundAll(Sound.CLICK, 1F);
                 }
                 
-                messageAll(ChatColor.WHITE + "Match starting in " + ChatColor.RED + this.countdownTimeRemaining + ChatColor.WHITE + "...");
+                messageAll(ChatColor.GRAY + "The match is starting in " + ChatColor.AQUA + this.countdownTimeRemaining + ChatColor.WHITE + "...");
                 countdownTimeRemaining--;
             }
             
@@ -197,7 +202,7 @@ public final class Match {
 
         messageAll(ChatColor.WHITE + "Match started.");
         messageAll("");
-        messageAll(ChatColor.DARK_RED + ChatColor.BOLD.toString() + "(WARNING) " + ChatColor.RED + "Butterfly clicking / Block glitch is allowed. and they may resulting into a ban.");
+        messageAll(ChatColor.DARK_RED + ChatColor.BOLD.toString() + "(WARNING) " + ChatColor.RED + "Butterfly clicking / Block glitch is not allowed and they may result into a ban.");
         messageAll("");
 
         Bukkit.getPluginManager().callEvent(new MatchStartEvent(this));
@@ -292,8 +297,9 @@ public final class Match {
         Map<UUID, Match> playingCache = matchHandler.getPlayingMatchCache();
         Map<UUID, Match> spectateCache = matchHandler.getSpectatingMatchCache();
         
-        if (kitType.isBuildingAllowed())
+        if (kitType.isBuildingAllowed()) {
             arena.restore();
+        }
         PotPvPRP.getInstance().getArenaHandler().releaseArena(arena);
         matchHandler.removeMatch(this);
         
@@ -324,22 +330,31 @@ public final class Match {
         return ImmutableMap.copyOf(postMatchPlayers);
     }
     
-    private void checkEnded() {
+    public void checkEnded() {
         if (state == MatchState.ENDING || state == MatchState.TERMINATED) {
             return;
         }
-        
-        List<MatchTeam> teamsAlive = new ArrayList<>();
-        
-        for (MatchTeam team : teams) {
-            if (!team.getAliveMembers().isEmpty()) {
-                teamsAlive.add(team);
+
+        if (kitType.getNeededWins() > 1) {
+            for (MatchTeam team : teams) {
+                if (wins.get(team) >= kitType.getNeededWins()) {
+                    this.winner = team;
+                    endMatch(MatchEndReason.ENEMIES_ELIMINATED);
+                }
             }
-        }
-        
-        if (teamsAlive.size() == 1) {
-            this.winner = teamsAlive.get(0);
-            endMatch(MatchEndReason.ENEMIES_ELIMINATED);
+        } else {
+            List<MatchTeam> teamsAlive = new ArrayList<>();
+
+            for (MatchTeam team : teams) {
+                if (!team.getAliveMembers().isEmpty()) {
+                    teamsAlive.add(team);
+                }
+            }
+
+            if (teamsAlive.size() == 1) {
+                this.winner = teamsAlive.get(0);
+                endMatch(MatchEndReason.ENEMIES_ELIMINATED);
+            }
         }
     }
     
@@ -446,6 +461,32 @@ public final class Match {
         
         postMatchPlayers.put(player.getUniqueId(), new PostMatchPlayer(player, kitType.getHealingMethod(), totalHits.getOrDefault(player.getUniqueId(), 0), longestCombo.getOrDefault(player.getUniqueId(), 0), missedPots.getOrDefault(player.getUniqueId(), 0)));
         checkEnded();
+    }
+
+    public void markDead(Player player, Player killer) {
+        MatchTeam team=getTeam(player.getUniqueId());
+
+        if (team == null) {
+            return;
+        }
+        UUIDCache uuidCache = PotPvPRP.getInstance().getUuidCache();
+        if (getKitType().isBridges()) {
+            Location spawnLoc=(teams.get(0) != null && teams.get(0) == team ? getArena().getTeam1Spawn() : getArena().getTeam2Spawn());
+            player.teleport(spawnLoc);
+            player.setNoDamageTicks(20);
+            getUsedKit().getOrDefault(player.getUniqueId(), Kit.ofDefaultKit(getKitType())).apply(player);
+            if (killer != null) {
+                if (getTeam(killer.getUniqueId()) != null) {
+                    if (getTeams().contains(getTeam(killer.getUniqueId()))) {
+                        messageAll(CC.translate("&b" + uuidCache.name(killer.getUniqueId()) + "&f threw &d" + uuidCache.name(player.getUniqueId()) + " &fin to the void."));
+                    } else {
+                        messageAll(CC.translate("&b" + uuidCache.name(player.getUniqueId()) + " &fdied."));
+                    }
+                }
+            } else {
+                messageAll(CC.translate("&b" + uuidCache.name(player.getUniqueId()) + " &fdied."));
+            }
+        }
     }
     
     public MatchTeam getTeam(UUID playerUuid) {
@@ -605,7 +646,15 @@ public final class Match {
      * allows building.
      */
     public boolean canBeBroken(Block block) {
-        return (kitType.getId().equals("SPLEEF") && (block.getType() == Material.SNOW_BLOCK || block.getType() == Material.GRASS || block.getType() == Material.DIRT)) || placedBlocks.contains(block.getLocation().toVector().toBlockVector());
+        return (kitType.isSpleef() && (block.getType() == Material.SNOW_BLOCK || block.getType() == Material.GRASS || block.getType() == Material.DIRT)) || placedBlocks.contains(block.getLocation().toVector().toBlockVector());
     }
-    
+
+
+    public void loadChunks() {
+        getArena().getBounds().getChunks().forEach(chunk -> {
+            if (!chunk.isLoaded()) {
+                chunk.load();
+            }
+        });
+    }
 }

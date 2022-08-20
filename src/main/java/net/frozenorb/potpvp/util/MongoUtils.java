@@ -13,7 +13,8 @@ import lombok.experimental.UtilityClass;
 public final class MongoUtils {
 
     /**
-     * UpdateOptions used to perform an upsert (see https://docs.mongodb.com/manual/reference/method/db.collection.update/)
+     * UpdateOptions used to perform an upsert
+     * @see <a href="https://docs.mongodb.com/manual/reference/method/db.collection.update/">MongoDB Documentation</a>
      */
     public static final UpdateOptions UPSERT_OPTIONS = new UpdateOptions().upsert(true);
 

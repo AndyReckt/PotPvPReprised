@@ -25,17 +25,17 @@ public final class PartyItems {
 
     static {
         ItemUtils.setDisplayName(LEAVE_PARTY_ITEM, RED + "Leave Party");
-        ItemUtils.setDisplayName(ASSIGN_CLASSES, RED + "HCF Kits");
-        ItemUtils.setDisplayName(START_TEAM_SPLIT_ITEM, RED + "Start Team Split");
-        ItemUtils.setDisplayName(START_FFA_ITEM, RED + "Start Party FFA");
-        ItemUtils.setDisplayName(OTHER_PARTIES_ITEM, RED + "Other Parties");
+        ItemUtils.setDisplayName(ASSIGN_CLASSES, AQUA + "HCF Kits");
+        ItemUtils.setDisplayName(START_TEAM_SPLIT_ITEM, AQUA + "Start Team Split");
+        ItemUtils.setDisplayName(START_FFA_ITEM, AQUA + "Start Party FFA");
+        ItemUtils.setDisplayName(OTHER_PARTIES_ITEM, AQUA + "Other Parties");
     }
 
     public static ItemStack icon(Party party) {
         ItemStack item = new ItemStack(ICON_TYPE);
 
         String leaderName = PotPvPRP.getInstance().getUuidCache().name(party.getLeader());
-        String displayName = LEFT_ARROW + RED + BOLD + leaderName + RED + "'s Party" + RIGHT_ARROW;
+        String displayName = AQUA + "Party info";
 
         ItemUtils.setDisplayName(item, displayName);
         return item;

@@ -51,7 +51,12 @@ public final class BooleanTraitButton<T> extends Button {
 
     @Override
     public Material getMaterial(Player player) {
-        return readFunction.apply(target) ? Material.REDSTONE_TORCH_ON : Material.LEVER;
+        return Material.WOOL;
+    }
+
+    @Override
+    public byte getDamageValue(Player player) {
+        return (byte) (readFunction.apply(target) ? 5 : 14);
     }
 
     @Override

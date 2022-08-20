@@ -3,6 +3,7 @@ package net.frozenorb.potpvp.match.postmatchinv;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 
+import com.google.common.collect.Lists;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.match.Match;
 import net.frozenorb.potpvp.match.MatchTeam;
@@ -68,7 +69,6 @@ public final class PostMatchInvHandler {
         if (!spectatorUuids.isEmpty()) {
             List<String> spectatorNames = PatchedPlayerUtils.mapToNames(spectatorUuids);
             spectatorNames.sort(String::compareToIgnoreCase);
-
             String firstFourNames = Joiner.on(", ").join(
                 spectatorNames.subList(
                     0,

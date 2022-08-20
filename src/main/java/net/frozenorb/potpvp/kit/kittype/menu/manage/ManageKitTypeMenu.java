@@ -3,10 +3,10 @@ package net.frozenorb.potpvp.kit.kittype.menu.manage;
 import com.google.common.collect.ImmutableList;
 
 import net.frozenorb.potpvp.arena.menu.manage.ManageMenu;
-import net.frozenorb.potpvp.command.impl.misc.ManageCommand;
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.util.menu.BooleanTraitButton;
 import net.frozenorb.potpvp.util.menu.Button;
+import net.frozenorb.potpvp.util.menu.IntegerTraitButton;
 import net.frozenorb.potpvp.util.menu.Menu;
 
 import net.frozenorb.potpvp.util.menu.buttons.BackButton;
@@ -29,7 +29,7 @@ public class ManageKitTypeMenu extends Menu {
 
     public ManageKitTypeMenu(KitType type) {
         setNoncancellingInventory(true);
-        setUpdateAfterClick(false);
+        setUpdateAfterClick(true);
 
         this.type = type;
     }
@@ -43,24 +43,33 @@ public class ManageKitTypeMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
 
-        // Vertical row
-        for (int i = 1; i <= 5; i++) {
-            buttons.put(getSlot(1, i), Button.placeholder(Material.OBSIDIAN));
-        }
-
         // Horizontal row
         for (int i = 1; i <= 8; i++) {
             buttons.put(getSlot(i, 1), Button.placeholder(Material.OBSIDIAN));
         }
 
-        buttons.put(getSlot(0, 1), new BooleanTraitButton<>(type, "Hidden", KitType::setHidden, KitType::isHidden, KitType::saveAsync));
-        buttons.put(getSlot(0, 2), new BooleanTraitButton<>(type, "Editor Item Spawn", KitType::setEditorSpawnAllowed, KitType::isEditorSpawnAllowed, KitType::saveAsync));
-        buttons.put(getSlot(0, 3), new BooleanTraitButton<>(type, "Health Shown", KitType::setHealthShown, KitType::isHealthShown, KitType::saveAsync));
-        buttons.put(getSlot(0, 4), new BooleanTraitButton<>(type, "Building Allowed", KitType::setBuildingAllowed, KitType::isBuildingAllowed, KitType::saveAsync));
-        buttons.put(getSlot(0, 5), new BooleanTraitButton<>(type, "Hardcore Healing", KitType::setHardcoreHealing, KitType::isHardcoreHealing, KitType::saveAsync));
-        buttons.put(getSlot(0, 6), new BooleanTraitButton<>(type, "Pearl Damage", KitType::setPearlDamage, KitType::isPearlDamage, KitType::saveAsync));
-        buttons.put(getSlot(0, 7), new BooleanTraitButton<>(type, "Supports Ranked", KitType::setSupportsRanked, KitType::isSupportsRanked, KitType::saveAsync));
-        buttons.put(getSlot(0, 8), new Button() {
+        buttons.put(getSlot(0, 1), new IntegerTraitButton<>(type, "Needed Wins", KitType::setNeededWins, KitType::getNeededWins, KitType::saveAsync));
+
+        buttons.put(getSlot(0, 2), new BooleanTraitButton<>(type, "Hidden", KitType::setHidden, KitType::isHidden, KitType::saveAsync));
+        buttons.put(getSlot(1, 2), new BooleanTraitButton<>(type, "Editable", KitType::setEditable, KitType::isEditable, KitType::saveAsync));
+        buttons.put(getSlot(2, 2), new BooleanTraitButton<>(type, "Editor Item Spawn", KitType::setEditorSpawnAllowed, KitType::isEditorSpawnAllowed, KitType::saveAsync));
+        buttons.put(getSlot(3, 2), new BooleanTraitButton<>(type, "Health Shown", KitType::setHealthShown, KitType::isHealthShown, KitType::saveAsync));
+        buttons.put(getSlot(4, 2), new BooleanTraitButton<>(type, "Building Allowed", KitType::setBuildingAllowed, KitType::isBuildingAllowed, KitType::saveAsync));
+        buttons.put(getSlot(5, 2), new BooleanTraitButton<>(type, "Hardcore Healing", KitType::setHardcoreHealing, KitType::isHardcoreHealing, KitType::saveAsync));
+        buttons.put(getSlot(6, 2), new BooleanTraitButton<>(type, "Pearl Damage", KitType::setPearlDamage, KitType::isPearlDamage, KitType::saveAsync));
+        buttons.put(getSlot(7, 2), new BooleanTraitButton<>(type, "Supports Ranked", KitType::setSupportsRanked, KitType::isSupportsRanked, KitType::saveAsync));
+        buttons.put(getSlot(8, 2), new BooleanTraitButton<>(type, "Boxing", KitType::setBoxfight, KitType::isBoxfight, KitType::saveAsync));
+        buttons.put(getSlot(0, 3), new BooleanTraitButton<>(type, "Base Raiding", KitType::setRaiding, KitType::isRaiding, KitType::saveAsync));
+        buttons.put(getSlot(1, 3), new BooleanTraitButton<>(type, "Sumo", KitType::setSumo, KitType::isSumo, KitType::saveAsync));
+        buttons.put(getSlot(2, 3), new BooleanTraitButton<>(type, "Spleef", KitType::setSpleef, KitType::isSpleef, KitType::saveAsync));
+        buttons.put(getSlot(3, 3), new BooleanTraitButton<>(type, "BuildUHC", KitType::setBuildUHC, KitType::isBuildUHC, KitType::saveAsync));
+        buttons.put(getSlot(4, 3), new BooleanTraitButton<>(type, "FinalUHC", KitType::setFinalUHC, KitType::isFinalUHC, KitType::saveAsync));
+        buttons.put(getSlot(5, 3), new BooleanTraitButton<>(type, "Archer", KitType::setArcher, KitType::isArcher, KitType::saveAsync));
+        buttons.put(getSlot(6, 3), new BooleanTraitButton<>(type, "Bridges", KitType::setBridges, KitType::isBridges, KitType::saveAsync));
+
+
+
+        buttons.put(getSlot(8, 4), new Button() {
 
             @Override
             public String getName(Player player) {
@@ -86,8 +95,8 @@ public class ManageKitTypeMenu extends Menu {
 
         });
 
-        buttons.put(getSlot(1, 0), new SaveKitTypeButton(type));
-        buttons.put(getSlot(2, 0), new CancelKitTypeEditButton());
+        buttons.put(getSlot(0, 0), new SaveKitTypeButton(type));
+        buttons.put(getSlot(1, 0), new CancelKitTypeEditButton());
 
         buttons.put(getSlot(8, 0), new BackButton(new ManageMenu()));
 

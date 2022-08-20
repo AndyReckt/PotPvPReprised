@@ -38,7 +38,7 @@ public final class MatchDurationLimitListener implements Listener {
                 }
 
                 // Very ugly to do it here, but I don't want to put another runnable per match
-                if (match.getKitType().getId().equals("SUMO")) {
+                if (match.getKitType().getId().toUpperCase().equals("SUMO")) {
                     match.getTeams().forEach(t -> t.getAllMembers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> {
                         p.setHealth(20);
                         p.setFoodLevel(20);

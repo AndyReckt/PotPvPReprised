@@ -16,7 +16,7 @@ public class JumpToPageButton extends Button {
 
     @Override
     public String getName(Player player) {
-        return "§ePage " + this.page;
+        return "§fPage " + this.page;
     }
 
     @Override

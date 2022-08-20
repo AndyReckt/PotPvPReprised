@@ -2,7 +2,6 @@ package net.frozenorb.potpvp.kit.kittype.menu.select;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.util.Callback;
 import net.frozenorb.potpvp.util.menu.Button;
@@ -14,18 +13,18 @@ import org.bukkit.event.inventory.ClickType;
 import java.util.ArrayList;
 import java.util.List;
 
-final class KitTypeButton extends Button {
+final class HctKitTypeButton extends Button {
 
     private final KitType kitType;
     private final Callback<KitType> callback;
     private final List<String> descriptionLines;
     private final int amount;
 
-    KitTypeButton(KitType kitType, Callback<KitType> callback) {
-        this(kitType, callback, ImmutableList.of(), 1);
+    HctKitTypeButton(Callback<KitType> callback, String id) {
+        this(KitType.byId(id),callback, ImmutableList.of(), 1);
     }
 
-    KitTypeButton(KitType kitType, Callback<KitType> callback, List<String> descriptionLines, int amount) {
+    HctKitTypeButton(KitType kitType, Callback<KitType> callback, List<String> descriptionLines, int amount) {
         this.kitType = Preconditions.checkNotNull(kitType, "kitType");
         this.callback = Preconditions.checkNotNull(callback, "callback");
         this.descriptionLines = ImmutableList.copyOf(descriptionLines);
@@ -34,21 +33,14 @@ final class KitTypeButton extends Button {
 
     @Override
     public String getName(Player player) {
-        return ChatColor.RED + kitType.getDisplayName();
+        return ChatColor.RED + "HCF Kits";
     }
 
     @Override
     public List<String> getDescription(Player player) {
         List<String> description = new ArrayList<>();
 
-        if (kitType.isHidden()) {
-            description.add(ChatColor.GRAY + "Hidden from normal players");
-        }
-
         if (!descriptionLines.isEmpty()) {
-            if (!(description.isEmpty())) {
-                description.add("");
-            }
             description.addAll(descriptionLines);
         }
 
@@ -75,10 +67,6 @@ final class KitTypeButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        if (kitType.equals(KitType.teamFight)) {
-            new SelectHctKitTypeMenu(callback, "Select a HCT Kit").openMenu(player);
-            return;
-        }
         callback.callback(kitType);
     }
 

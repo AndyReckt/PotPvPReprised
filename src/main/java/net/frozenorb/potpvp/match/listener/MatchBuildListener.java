@@ -1,6 +1,8 @@
 package net.frozenorb.potpvp.match.listener;
 
+import me.andyreckt.holiday.utils.CC;
 import net.frozenorb.potpvp.PotPvPRP;
+import net.frozenorb.potpvp.arena.Arena;
 import net.frozenorb.potpvp.match.Match;
 import net.frozenorb.potpvp.match.MatchHandler;
 import net.frozenorb.potpvp.match.MatchState;
@@ -52,6 +54,61 @@ public final class MatchBuildListener implements Listener {
         }
 
         Match match = matchHandler.getMatchPlaying(player);
+
+
+        if (match.getKitType().isRaiding()) {
+            if (player.hasMetadata("trapper")) {
+                Arena arena=match.getArena();
+                Cuboid bounds=arena.getBounds();
+
+                if (!bounds.contains(event.getBlockPlaced())) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                match.recordPlacedBlock(event.getBlock());
+
+                event.getItemInHand().setAmount(64);
+                return;
+            }
+        }
+
+        if (match.getKitType().isBridges()) {
+            if (event.getBlock().getType() == Material.STATIONARY_LAVA || event.getBlock().getType() == Material.STATIONARY_LAVA) {
+                event.setCancelled(true);
+                return;
+            }
+            if (event.getBlock().getType() == Material.WATER || event.getBlock().getType() == Material.STATIONARY_WATER) {
+                event.setCancelled(true);
+                return;
+            }
+            if (event.getBlockPlaced().getLocation().getBlockY() >= (match.getArena().getSpectatorSpawn().getY() + 10)) {
+                event.setCancelled(true);
+                return;
+            }
+            if (match.getArena().getTeam1Spawn().distance(event.getBlockPlaced().getLocation()) < 10) {
+                event.setCancelled(true);
+                return;
+            }
+            if (match.getArena().getTeam2Spawn().distance(event.getBlockPlaced().getLocation()) < 10) {
+                event.setCancelled(true);
+                return;
+            }
+            for ( int i=0; i < 5; i++ ) {
+                if (event.getBlockPlaced().getLocation().subtract(0, 1 + i, 0).getBlock().getType().name().contains("LAVA")) {
+                    event.setCancelled(true);
+                    player.sendMessage(CC.translate("&cYou cannot place blocks near portals."));
+                    break;
+                }
+            }
+            for ( int i=0; i < 5; i++ ) {
+                if (event.getBlockPlaced().getLocation().subtract(0, 1 + i, 0).getBlock().getType().name().contains("WATER")) {
+                    event.setCancelled(true);
+                    player.sendMessage(CC.translate("&cYou cannot place blocks near portals."));
+                    break;
+                }
+            }
+        }
 
         if (!match.getKitType().isBuildingAllowed()) {
             event.setCancelled(true);

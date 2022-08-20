@@ -36,15 +36,13 @@ public final class MongoEloRepository implements EloRepository {
         instance = this;
         MongoUtils.getCollection(MONGO_COLLECTION_NAME).createIndex(new Document("players", 1));
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(PotPvPRP.getInstance(), () -> {
-            refreshFormattedElo();
-        }, 5 * 30, 5 * 30);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(PotPvPRP.getInstance(), this::refreshFormattedElo, 10 * 20, 10 * 20);
     }
     
     @Override
     public Map<KitType, Integer> loadElo(Set<UUID> playerUuids) throws IOException {
         MongoCollection<Document> partyEloCollection = MongoUtils.getCollection(MONGO_COLLECTION_NAME);
-        Set<String> playerUuidStrings = playerUuids.stream().map(u -> u.toString()).collect(Collectors.toSet());
+        Set<String> playerUuidStrings = playerUuids.stream().map(UUID::toString).collect(Collectors.toSet());
         
         try {
             Document eloDocument = partyEloCollection.find(new Document("players", playerUuidStrings)).first();
@@ -81,7 +79,7 @@ public final class MongoEloRepository implements EloRepository {
             document.putIfAbsent(kitType.getId(), EloHandler.DEFAULT_ELO);
         });
 
-        KitType.getAllTypes().stream().filter(kitType -> kitType.isSupportsRanked()).forEach(kitType -> {
+        KitType.getAllTypes().stream().filter(KitType::isSupportsRanked).forEach(kitType -> {
             wrapper[0] = wrapper[0] + 1;
             wrapper[1] = wrapper[1] + elo.getOrDefault(kitType, EloHandler.DEFAULT_ELO);
         });
@@ -92,7 +90,9 @@ public final class MongoEloRepository implements EloRepository {
         }
 
         try {
-            MongoUtils.getCollection(MONGO_COLLECTION_NAME).updateOne(new Document("players", playerUuids.stream().map(u -> u.toString()).collect(Collectors.toSet())), new Document("$set", document), MongoUtils.UPSERT_OPTIONS // creates document if it doesn't exist
+            MongoUtils.getCollection(MONGO_COLLECTION_NAME).updateOne(
+                    new Document("players", playerUuids.stream().map(UUID::toString).collect(Collectors.toSet())),
+                    new Document("$set", document), MongoUtils.UPSERT_OPTIONS // creates document if it doesn't exist
             );
         } catch (MongoException ex) {
             throw new IOException(ex);
@@ -100,12 +100,12 @@ public final class MongoEloRepository implements EloRepository {
     }
 
     @Override
-    public Map<String, Integer> topElo(KitType type) throws IOException {
+    public Map<String, Integer> topElo(KitType type) {
         return cachedFormattedElo.getOrDefault(type == null ? "GLOBAL" : type.getId(), ImmutableMap.of());
     }
 
     private void refreshFormattedElo() {
-        KitType.getAllTypes().stream().filter(type -> type.isSupportsRanked()).forEach(type -> {
+        KitType.getAllTypes().stream().filter(KitType::isSupportsRanked).forEach(type -> {
             Map<String, Integer> topElo = Maps.newLinkedHashMap();
             mapTop10(type.getId(), topElo);
             cachedFormattedElo.put(type.getId(), topElo);

@@ -32,9 +32,9 @@ public final class EloHandler {
         Bukkit.getPluginManager().registerEvents(new EloUpdateListener(this, new EloCalculator(
             35, // k power
             7,
-            25,
+            20,
             7,
-            25
+            20
         )), PotPvPRP.getInstance());
 
         eloRepository = new MongoEloRepository();

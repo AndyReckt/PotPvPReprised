@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
+import net.frozenorb.potpvp.match.listener.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -22,25 +23,6 @@ import net.frozenorb.potpvp.arena.Arena;
 import net.frozenorb.potpvp.arena.ArenaHandler;
 import net.frozenorb.potpvp.arena.ArenaSchematic;
 import net.frozenorb.potpvp.kit.kittype.KitType;
-import net.frozenorb.potpvp.match.listener.GoldenHeadListener;
-import net.frozenorb.potpvp.match.listener.KitSelectionListener;
-import net.frozenorb.potpvp.match.listener.MatchBlockPickupListener;
-import net.frozenorb.potpvp.match.listener.MatchBuildListener;
-import net.frozenorb.potpvp.match.listener.MatchComboListener;
-import net.frozenorb.potpvp.match.listener.MatchCountdownListener;
-import net.frozenorb.potpvp.match.listener.MatchDeathMessageListener;
-import net.frozenorb.potpvp.match.listener.MatchDurationLimitListener;
-import net.frozenorb.potpvp.match.listener.MatchEnderPearlDamageListener;
-import net.frozenorb.potpvp.match.listener.MatchGeneralListener;
-import net.frozenorb.potpvp.match.listener.MatchHardcoreHealingListener;
-import net.frozenorb.potpvp.match.listener.MatchHealthDisplayListener;
-import net.frozenorb.potpvp.match.listener.MatchPartySpectateListener;
-import net.frozenorb.potpvp.match.listener.MatchRodListener;
-import net.frozenorb.potpvp.match.listener.MatchSoupListener;
-import net.frozenorb.potpvp.match.listener.MatchStatsListener;
-import net.frozenorb.potpvp.match.listener.MatchWizardListener;
-import net.frozenorb.potpvp.match.listener.SpectatorItemListener;
-import net.frozenorb.potpvp.match.listener.SpectatorPreventionListener;
 
 public final class MatchHandler {
 
@@ -64,6 +46,7 @@ public final class MatchHandler {
         Bukkit.getPluginManager().registerEvents(new KitSelectionListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchBlockPickupListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchBuildListener(), PotPvPRP.getInstance());
+        Bukkit.getPluginManager().registerEvents(new MatchBoxingListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchComboListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchCountdownListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchDeathMessageListener(), PotPvPRP.getInstance());
@@ -71,7 +54,6 @@ public final class MatchHandler {
         Bukkit.getPluginManager().registerEvents(new MatchEnderPearlDamageListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchGeneralListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchHardcoreHealingListener(), PotPvPRP.getInstance());
-        Bukkit.getPluginManager().registerEvents(new MatchHealthDisplayListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchPartySpectateListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchRodListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchSoupListener(), PotPvPRP.getInstance());
@@ -82,6 +64,10 @@ public final class MatchHandler {
     }
 
     public Match startMatch(List<MatchTeam> teams, KitType kitType, boolean ranked, boolean allowRematches) {
+       return startMatch(teams, kitType, ranked, allowRematches, null);
+    }
+
+    public Match startMatch(List<MatchTeam> teams, KitType kitType, boolean ranked, boolean allowRematches, ArenaSchematic arenaSchematic) {
         boolean anyOps = false;
 
         for (MatchTeam team : teams) {
@@ -121,25 +107,42 @@ public final class MatchHandler {
         //
         // the left side of the or statement covers the top row, and the
         // right side covers the right side
-        Optional<Arena> openArenaOpt = arenaHandler.allocateUnusedArena(schematic ->
-                schematic.isEnabled() &&
-                        !schematic.isTeamFightsOnly() &&
-                        canUseSchematic(kitType, schematic) &&
-                        matchSize <= schematic.getMaxPlayerCount() &&
-                        matchSize >= schematic.getMinPlayerCount() &&
-                        (!ranked || schematic.isSupportsRanked()) &&
-                        (kitType.getId().equals("ARCHER") || !schematic.isArcherOnly())
-        );
 
-        if (kitType.equals(KitType.teamFight)) {
+        Optional<Arena> openArenaOpt;
+        if (arenaSchematic == null) {
             openArenaOpt = arenaHandler.allocateUnusedArena(schematic ->
                     schematic.isEnabled() &&
+                            !schematic.isTeamFightsOnly() &&
                             canUseSchematic(kitType, schematic) &&
                             matchSize <= schematic.getMaxPlayerCount() &&
                             matchSize >= schematic.getMinPlayerCount() &&
-                            schematic.isTeamFightsOnly()
+                            (!ranked || schematic.isSupportsRanked()) &&
+                            (kitType.isArcher() || !schematic.isArcherOnly())
+            );
+
+            if (kitType.equals(KitType.teamFight)) {
+                openArenaOpt = arenaHandler.allocateUnusedArena(schematic ->
+                        schematic.isEnabled() &&
+                                canUseSchematic(kitType, schematic) &&
+                                matchSize <= schematic.getMaxPlayerCount() &&
+                                matchSize >= schematic.getMinPlayerCount() &&
+                                schematic.isTeamFightsOnly()
+                );
+            }
+        } else {
+             openArenaOpt = arenaHandler.allocateUnusedArena(schematic ->
+                    schematic.equals(arenaSchematic) &&
+                    (schematic.isEnabled() &&
+                            !schematic.isTeamFightsOnly() &&
+                            canUseSchematic(kitType, schematic) &&
+                            matchSize <= schematic.getMaxPlayerCount() &&
+                            matchSize >= schematic.getMinPlayerCount() &&
+                            (!ranked || schematic.isSupportsRanked()) &&
+                            (kitType.isArcher() || !schematic.isArcherOnly()))
             );
         }
+
+
 
         if (!openArenaOpt.isPresent()) {
             PotPvPRP.getInstance().getLogger().warning("Failed to start match: No open arenas found");
@@ -149,6 +152,7 @@ public final class MatchHandler {
         Match match = new Match(kitType, openArenaOpt.get(), teams, ranked, allowRematches);
 
         hostedMatches.add(match);
+        match.loadChunks();
         match.startCountdown();
 
         return match;
@@ -157,17 +161,25 @@ public final class MatchHandler {
     public static boolean canUseSchematic(KitType kitType, ArenaSchematic schematic) {
         String kitId = kitType.getId();
 
-        if (kitId.equals("ARCHER")) return schematic.isArcherOnly();
-        if (kitId.equals("BUILDUHC")) return schematic.isBuildUHCOnly();
-        if (kitId.equals("SPLEEF")) return schematic.isSpleefOnly();
-        if (kitId.equals("SUMO")) return schematic.isSumoOnly();
+        if (!schematic.isEnabled()) return false;
+
+        if (kitType.isArcher()) return schematic.isArcherOnly();
+        if (kitType.isBuildUHC()) return schematic.isBuildUHCOnly();
+        if (kitType.isFinalUHC()) return schematic.isFinalUHCOnly();
+        if (kitType.isBridges()) return schematic.isBridgeOnly();
+        if (kitType.isSpleef()) return schematic.isSpleefOnly();
+        if (kitType.isRaiding()) return schematic.isRaidingOnly();
+        if (kitType.isSumo()) return schematic.isSumoOnly();
         if (kitId.equals("HCF")) return schematic.isHCFOnly();
         if (kitType.equals(KitType.teamFight)) return schematic.isTeamFightsOnly();
 
-        if (schematic.isArcherOnly()) return kitId.equals("ARCHER");
-        if (schematic.isBuildUHCOnly()) return kitId.equals("BUILDUHC");
-        if (schematic.isSpleefOnly()) return kitId.equals("SPLEEF");
-        if (schematic.isSumoOnly()) return kitId.equals("SUMO");
+        if (schematic.isArcherOnly()) return kitType.isArcher();
+        if (schematic.isBuildUHCOnly()) return kitType.isBuildUHC();
+        if (schematic.isFinalUHCOnly()) return kitType.isFinalUHC();
+        if (schematic.isSpleefOnly()) return kitType.isSpleef();
+        if (schematic.isBridgeOnly()) return kitType.isBridges();
+        if (schematic.isSumoOnly()) return kitType.isSumo();
+        if (schematic.isRaidingOnly()) return kitType.isRaiding();
         if (schematic.isHCFOnly()) return kitId.equals("HCF");
 
         return true;
@@ -191,6 +203,8 @@ public final class MatchHandler {
      */
     public void cleanup() {
         for (Match match : this.getHostedMatches()) {
+            if (match.getKitType().isBridges()) match.getArena().restore();
+            if (match.getKitType().isRaiding()) match.getArena().restore();
             if (match.getKitType().isBuildingAllowed()) match.getArena().restore();
         }
     }

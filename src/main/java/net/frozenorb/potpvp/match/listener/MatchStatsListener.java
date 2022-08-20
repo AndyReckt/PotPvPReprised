@@ -39,13 +39,16 @@ public class MatchStatsListener implements Listener {
         if (lastHit != null) {
             if (lastHit.equals(damaged.getUniqueId())) {
                 combos.put(damager.getUniqueId(), combos.getOrDefault(damager.getUniqueId(), 0) + 1);
+                combos.put(damaged.getUniqueId(), 0);
             } else {
                 combos.put(damager.getUniqueId(), 1);
+                combos.put(damaged.getUniqueId(), 0);
             }
 
             longestCombo.put(damager.getUniqueId(), Math.max(combos.get(damager.getUniqueId()), longestCombo.getOrDefault(damager.getUniqueId(), 1)));
         } else {
             combos.put(damager.getUniqueId(), 0);
+            combos.put(damaged.getUniqueId(), 0);
         }
 
         totalHits.put(damager.getUniqueId(), totalHits.getOrDefault(damager.getUniqueId(), 0) + 1);

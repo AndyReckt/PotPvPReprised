@@ -10,6 +10,7 @@ import net.frozenorb.potpvp.lobby.menu.StatisticsMenu;
 import net.frozenorb.potpvp.match.Match;
 import net.frozenorb.potpvp.match.MatchHandler;
 import net.frozenorb.potpvp.match.MatchState;
+import net.frozenorb.potpvp.party.PartyHandler;
 import net.frozenorb.potpvp.util.ItemListener;
 import net.frozenorb.potpvp.validation.PotPvPValidation;
 
@@ -88,6 +89,18 @@ public final class LobbyItemListener extends ItemListener {
 
         addHandler(LobbyItems.PLAYER_STATISTICS, player -> {
             new StatisticsMenu().openMenu(player);
+        });
+
+        addHandler(LobbyItems.PARTY_ITEM, player -> {
+            PartyHandler partyHandler = PotPvPRP.getInstance().getPartyHandler();
+
+            if (partyHandler.hasParty(player)) {
+                player.sendMessage(ChatColor.RED + "You are already in a party.");
+                return;
+            }
+
+            partyHandler.getOrCreateParty(player);
+            player.sendMessage(ChatColor.GREEN + "Created a new party.");
         });
 
         addHandler(LobbyItems.UNFOLLOW_ITEM, new UnfollowCommand()::unfollow);

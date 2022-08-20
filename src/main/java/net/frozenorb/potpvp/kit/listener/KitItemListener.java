@@ -14,7 +14,7 @@ public final class KitItemListener extends ItemListener {
             LobbyHandler lobbyHandler = PotPvPRP.getInstance().getLobbyHandler();
 
             if (lobbyHandler.isInLobby(player)) {
-                new SelectKitTypeMenu(kitType -> {
+                new SelectKitTypeMenu(true, kitType -> {
                     new KitsMenu(kitType).openMenu(player);
                 }, "Select a kit to edit...").openMenu(player);
             }

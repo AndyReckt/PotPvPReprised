@@ -41,7 +41,6 @@ public final class KitType {
         teamFight.id = "HCFTeamFight";
         teamFight.displayName = "HCF Team Fight";
         teamFight.displayColor = ChatColor.AQUA;
-
         allTypes.sort(Comparator.comparing(KitType::getSort));
     }
 
@@ -99,6 +98,7 @@ public final class KitType {
      * whereas some kit types (ex HCTeams and soup) allow spawning in items as well.
      */
     @Getter @Setter private boolean editorSpawnAllowed = true;
+    @Getter @Setter private boolean editable = true;
 
     /**
      * Determines if normal, non-admin players should be able to see this KitType.
@@ -139,6 +139,21 @@ public final class KitType {
     @Getter @Setter private int sort = 0;
 
     @Getter @Setter private boolean supportsRanked = false;
+
+    @Getter @Setter private boolean boxfight = false;
+
+    @Getter @Setter private boolean sumo = false;
+    @Getter @Setter private boolean spleef = false;
+
+    @Getter @Setter private boolean archer = false;
+    @Getter @Setter private boolean buildUHC = false;
+    @Getter @Setter private boolean finalUHC = false;
+
+    @Getter @Setter private boolean raiding = false;
+
+    @Getter @Setter private boolean bridges = false;
+
+    @Getter @Setter private int neededWins = 1;
 
     public static KitType byId(String id) {
         for (KitType kitType : allTypes) {

@@ -7,9 +7,12 @@ import net.frozenorb.potpvp.kit.kittype.HealingMethod;
 import net.frozenorb.potpvp.match.postmatchinv.PostMatchInvHandler;
 import net.frozenorb.potpvp.match.postmatchinv.PostMatchPlayer;
 import net.frozenorb.potpvp.util.InventoryUtils;
+import net.frozenorb.potpvp.util.ItemBuilder;
 import net.frozenorb.potpvp.util.menu.Button;
 import net.frozenorb.potpvp.util.menu.Menu;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,7 +28,7 @@ public final class PostMatchMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "Inventory of " + PotPvPRP.getInstance().getUuidCache().name(target.getPlayerUuid());
+        return "Inventory of " + Bukkit.getOfflinePlayer(target.getPlayerUuid()).getName();
     }
 
     @Override
@@ -43,7 +46,9 @@ public final class PostMatchMenu extends Menu {
         }
 
         for (ItemStack inventoryItem : targetInv) {
-            buttons.put(getSlot(x, y), Button.fromItem(inventoryItem));
+            if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR)) buttons.put(getSlot(x, y), Button.fromItem(ItemBuilder.of(Material.AIR).build()));
+            else buttons.put(getSlot(x, y), Button.fromItem(inventoryItem));
+
 
             if (x++ > 7) {
                 x = 0;
@@ -54,6 +59,7 @@ public final class PostMatchMenu extends Menu {
         x = 3; // start armor backwards, helm first
 
         for (ItemStack armorItem : target.getArmor()) {
+            if (armorItem == null || armorItem.getType().equals(Material.AIR)) buttons.put(getSlot(x, y), Button.fromItem(ItemBuilder.of(Material.AIR).build()));
             buttons.put(getSlot(x--, y), Button.fromItem(armorItem));
         }
 

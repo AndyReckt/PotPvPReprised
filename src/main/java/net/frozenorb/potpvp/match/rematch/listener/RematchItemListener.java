@@ -1,5 +1,6 @@
 package net.frozenorb.potpvp.match.rematch.listener;
 
+import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.command.impl.duel.AcceptCommand;
 import net.frozenorb.potpvp.command.impl.duel.DuelCommand;
 import net.frozenorb.potpvp.match.rematch.RematchData;
@@ -20,7 +21,7 @@ public final class RematchItemListener extends ItemListener {
 
             if (rematchData != null) {
                 Player target = Bukkit.getPlayer(rematchData.getTarget());
-                new DuelCommand().duel(player, target, rematchData.getKitType());
+                new DuelCommand().duel(player, target, rematchData.getKitType(), PotPvPRP.getInstance().getArenaHandler().getSchematic(rematchData.getArenaName()));
 
                 InventoryUtils.resetInventoryDelayed(player);
                 InventoryUtils.resetInventoryDelayed(target);

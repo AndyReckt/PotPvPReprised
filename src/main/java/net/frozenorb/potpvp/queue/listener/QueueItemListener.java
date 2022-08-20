@@ -2,6 +2,7 @@ package net.frozenorb.potpvp.queue.listener;
 
 import com.google.common.collect.ImmutableList;
 
+import com.lunarclient.bukkitapi.LunarClientAPI;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.kit.kittype.menu.select.CustomSelectKitTypeMenu;
@@ -60,6 +61,14 @@ public final class QueueItemListener extends ItemListener {
 
     private Consumer<Player> joinSoloConsumer(boolean ranked) {
         return player -> {
+            if (ranked && !LunarClientAPI.getInstance().isRunningLunarClient(player)) {
+                player.sendMessage(CC.RED + "You need to be running LunarClient in order to join a ranked queue!");
+                return;
+            }
+            if (ranked && PotPvPRP.getInstance().getMatchHandler().isRankedMatchesDisabled()) {
+                player.sendMessage(CC.RED + "Ranked matches are currently disabled!");
+                return;
+            }
             if (PotPvPValidation.canJoinQueue(player)) {
                 new CustomSelectKitTypeMenu(kitType -> {
                     queueHandler.joinQueue(player, kitType, ranked);
@@ -105,13 +114,13 @@ public final class QueueItemListener extends ItemListener {
                     Math.max(1, Math.min(64, ranked ? inQueueRanked + inFightsRanked : inQueueUnranked + inFightsUnranked)),
                     ranked ? ImmutableList.of(
                             " ",
-                            ChatColor.GRAY + "┃" + CC.WHITE + " Fighting: " + ChatColor.RED + inFightsRanked,
-                            ChatColor.GRAY + "┃" + CC.WHITE + " Queueing: " + ChatColor.RED + inQueueRanked
+                            ChatColor.GRAY + "┃" + CC.WHITE + " Fighting: " + ChatColor.AQUA + inFightsRanked,
+                            ChatColor.GRAY + "┃" + CC.WHITE + " Queueing: " + ChatColor.AQUA + inQueueRanked
                             ) :
                             ImmutableList.of(
                             " ",
-                            ChatColor.GRAY + "┃" + CC.WHITE + " Fighting: " + ChatColor.RED + inFightsUnranked,
-                            ChatColor.GRAY + "┃" + CC.WHITE + " Queueing: " + ChatColor.RED + inQueueUnranked
+                            ChatColor.GRAY + "┃" + CC.WHITE + " Fighting: " + ChatColor.AQUA + inFightsUnranked,
+                            ChatColor.GRAY + "┃" + CC.WHITE + " Queueing: " + ChatColor.AQUA + inQueueUnranked
                             )
             );
         };

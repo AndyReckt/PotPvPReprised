@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.InventoryView;
+import xyz.refinedev.spigot.utils.CC;
 
 import java.util.*;
 
@@ -58,7 +59,7 @@ public class RosterMenu extends PaginatedMenu {
             toReturn.put(toReturn.isEmpty() ? 0 : toReturn.size(), new Button() {
                 @Override
                 public String getName(Player player) {
-                    return member.getDisplayName();
+                    return CC.translate(member.getDisplayName());
                 }
 
                 @Override

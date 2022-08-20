@@ -41,6 +41,8 @@ public final class MatchDeathMessageListener implements Listener {
         }
 
         Player killed = event.getEntity();
+        Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(),() -> killed.spigot().respawn(), 3L);
+
         Player killer = killed.getKiller();
         PacketContainer lightningPacket = createLightningPacket(killed.getLocation());
 

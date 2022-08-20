@@ -1,5 +1,7 @@
 package net.frozenorb.potpvp.lobby;
 
+import me.andyreckt.holiday.Holiday;
+import me.andyreckt.holiday.utils.Tasks;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.profile.follow.FollowHandler;
 import net.frozenorb.potpvp.command.impl.silent.UnfollowCommand;
@@ -62,6 +64,7 @@ public final class LobbyHandler {
         if (!HolidayUtils.isInStaffMode(player)) player.setGameMode(GameMode.SURVIVAL);
 
         returnedToLobby.put(player.getUniqueId(), System.currentTimeMillis());
+        Tasks.runLater(() -> VisibilityUtils.updateVisibilityFlicker(player), 3);
     }
 
     public long getLastLobbyTime(Player player) {
@@ -69,6 +72,7 @@ public final class LobbyHandler {
     }
 
     public boolean isInLobby(Player player) {
+        if (Holiday.getInstance().getProfileHandler().getByPlayer(player).isInStaffMode()) return false;
         return !PotPvPRP.getInstance().getMatchHandler().isPlayingOrSpectatingMatch(player);
     }
 

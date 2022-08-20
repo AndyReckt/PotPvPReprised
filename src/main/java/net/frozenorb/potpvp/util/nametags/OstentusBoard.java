@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -70,12 +71,19 @@ public class OstentusBoard {
     private void updateHealthBelow(Player player, Scoreboard scoreboard) {
         if (this.ostentus.getAdapter().showHealthBelowName(player)) {
             if (scoreboard.getObjective(DisplaySlot.BELOW_NAME) == null) {
-                Objective objective = scoreboard.registerNewObjective("showhealth", "health");
+                Objective objective = scoreboard.registerNewObjective("showhealth", "dummy");
                 objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
                 objective.setDisplayName(ChatColor.RED + StringEscapeUtils.unescapeJava("\u2764"));
+                objective.getScore(player.getName()).setScore((int) (player.getHealth() * 5));
                 // Ensures that 0 isn't displayed if they haven't lost health.
                 for (Player loopPlayer : Bukkit.getOnlinePlayers()) {
-                    objective.getScore(loopPlayer).setScore((int) Math.floor(loopPlayer.getHealth()));
+                    objective.getScore(loopPlayer).setScore((int) (player.getHealth() * 5));
+                }
+            } else {
+                Objective objective = scoreboard.getObjective(DisplaySlot.BELOW_NAME);
+                objective.getScore(player.getName()).setScore((int) ((player.getHealth() + ((CraftPlayer) player).getHandle().getAbsorptionHearts()) * 5));
+                for (Player loopPlayer : Bukkit.getOnlinePlayers()) {
+                    objective.getScore(loopPlayer.getName()).setScore((int) ((loopPlayer.getHealth() + ((CraftPlayer) loopPlayer).getHandle().getAbsorptionHearts()) * 5));
                 }
             }
         } else {

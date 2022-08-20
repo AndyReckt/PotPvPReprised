@@ -55,7 +55,7 @@ public final class IntegerTraitButton<T> extends Button {
 
     @Override
     public Material getMaterial(Player player) {
-        return Material.GHAST_TEAR;
+        return Material.EMERALD;
     }
 
     @Override

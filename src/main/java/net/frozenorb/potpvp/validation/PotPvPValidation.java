@@ -1,6 +1,8 @@
 package net.frozenorb.potpvp.validation;
 
 import net.frozenorb.potpvp.PotPvPRP;
+import net.frozenorb.potpvp.arena.Arena;
+import net.frozenorb.potpvp.arena.ArenaSchematic;
 import net.frozenorb.potpvp.profile.follow.FollowHandler;
 import net.frozenorb.potpvp.lobby.LobbyHandler;
 import net.frozenorb.potpvp.match.MatchHandler;
@@ -40,6 +42,56 @@ public final class PotPvPValidation {
     private static final String TARGET_PARTY_REACHED_MAXIMUM_SIZE = ChatColor.RED + "The party is full.";
     private static final String TARGET_PARTY_IN_TOURNAMENT = ChatColor.RED + "That party is in a tournament!";
 
+    public static boolean canSendDuel(Player sender, Player target, ArenaSchematic arena) {
+        if (isInSilentMode(sender)) {
+            sender.sendMessage(CANNOT_DO_THIS_IN_SILENT_MODE);
+            return false;
+        }
+
+        if (isInSilentMode(sender)) {
+            sender.sendMessage(CANNOT_DO_THIS_IN_SILENT_MODE);
+            return false;
+        }
+
+        if (sender == target) {
+            sender.sendMessage(CANNOT_DUEL_SELF);
+            return false;
+        }
+
+        if (!isInLobby(sender)) {
+            sender.sendMessage(CANNOT_DO_THIS_WHILE_NOT_IN_LOBBY);
+            return false;
+        }
+
+        if (!isInLobby(target)) {
+            sender.sendMessage(TARGET_PLAYER_NOT_IN_LOBBY);
+            return false;
+        }
+
+        if (isFollowingSomeone(sender)) {
+            sender.sendMessage(CANNOT_DO_THIS_WHILE_FOLLOWING);
+            return false;
+        }
+
+        if (!getSetting(target, Setting.RECEIVE_DUELS)) {
+            sender.sendMessage(TARGET_PLAYER_HAS_DUELS_DISABLED);
+            return false;
+        }
+        boolean bool = false;
+        for (Arena arena1 :PotPvPRP.getInstance().getArenaHandler().getArenas(arena)) {
+            if (!arena1.isInUse()) {
+                bool = true;
+                break;
+            }
+        }
+
+        if (!bool) {
+            sender.sendMessage(ChatColor.RED + "There are no arenas available for this map.");
+            return false;
+        }
+
+        return true;
+    }
     public static boolean canSendDuel(Player sender, Player target) {
         if (isInSilentMode(sender)) {
             sender.sendMessage(CANNOT_DO_THIS_IN_SILENT_MODE);
@@ -75,7 +127,6 @@ public final class PotPvPValidation {
             sender.sendMessage(TARGET_PLAYER_HAS_DUELS_DISABLED);
             return false;
         }
-
         return true;
     }
 
@@ -142,6 +193,47 @@ public final class PotPvPValidation {
 
         if (isInTournament(sender)) {
             initiator.sendMessage(CANNOT_DO_THIS_WHILST_IN_TOURNAMENT);
+            return false;
+        }
+
+        return true;
+    }
+    public static boolean canSendDuel(Party sender, Party target, Player initiator, ArenaSchematic arena) {
+        if (sender == target) {
+            initiator.sendMessage(CANNOT_DUEL_OWN_PARTY);
+            return false;
+        }
+
+        if (!isInLobby(initiator)) {
+            initiator.sendMessage(CANNOT_DO_THIS_WHILE_NOT_IN_LOBBY);
+            return false;
+        }
+
+        if (!isInLobby(Bukkit.getPlayer(target.getLeader()))) {
+            initiator.sendMessage(TARGET_PARTY_NOT_IN_LOBBY);
+            return false;
+        }
+
+        if (!getSetting(Bukkit.getPlayer(target.getLeader()), Setting.RECEIVE_DUELS)) {
+            initiator.sendMessage(TARGET_PARTY_HAS_DUELS_DISABLED);
+            return false;
+        }
+
+        if (isInTournament(sender)) {
+            initiator.sendMessage(CANNOT_DO_THIS_WHILST_IN_TOURNAMENT);
+            return false;
+        }
+
+        boolean bool = false;
+        for (Arena arena1 :PotPvPRP.getInstance().getArenaHandler().getArenas(arena)) {
+            if (!arena1.isInUse()) {
+                bool = true;
+                break;
+            }
+        }
+
+        if (!bool) {
+            Bukkit.getPlayer(sender.getLeader()).sendMessage(ChatColor.RED + "There are no arenas available for this map.");
             return false;
         }
 

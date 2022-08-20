@@ -7,9 +7,10 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import me.andyreckt.holiday.utils.file.type.BasicConfigurationFile;
 import net.frozenorb.potpvp.adapter.nametag.NameTagAdapter;
 import net.frozenorb.potpvp.adapter.scoreboard.ScoreboardAdapter;
-import net.frozenorb.potpvp.adapter.tablist.TablistAdapter;
 import net.frozenorb.potpvp.arena.ArenaHandler;
 import net.frozenorb.potpvp.command.binds.*;
 import net.frozenorb.potpvp.command.impl.*;
@@ -39,11 +40,8 @@ import net.frozenorb.potpvp.hologram.PracticeHologram;
 import net.frozenorb.potpvp.kit.KitHandler;
 import net.frozenorb.potpvp.kit.kittype.KitType;
 import net.frozenorb.potpvp.kit.kittype.KitTypeJsonAdapter;
-<<<<<<< HEAD
-=======
 import net.frozenorb.potpvp.util.nametags.Ostentus;
 import net.frozenorb.potpvp.util.serialization.*;
->>>>>>> master
 import net.frozenorb.potpvp.listener.*;
 import net.frozenorb.potpvp.lobby.LobbyHandler;
 import net.frozenorb.potpvp.match.MatchHandler;
@@ -64,10 +62,11 @@ import net.frozenorb.potpvp.util.event.HalfHourEvent;
 import net.frozenorb.potpvp.util.menu.ButtonListener;
 import net.frozenorb.potpvp.util.scoreboard.api.AssembleStyle;
 import net.frozenorb.potpvp.util.scoreboard.api.ScoreboardHandler;
-import net.frozenorb.potpvp.util.serialization.*;
 import net.frozenorb.potpvp.util.uuid.UUIDCache;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -79,8 +78,6 @@ import org.bukkit.util.Vector;
 import xyz.refinedev.command.CommandHandler;
 import xyz.refinedev.spigot.chunk.ChunkSnapshot;
 import xyz.refinedev.spigot.utils.CC;
-import xyz.refinedev.tablist.TablistHandler;
-
 import java.util.Calendar;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -97,6 +94,7 @@ public final class PotPvPRP extends JavaPlugin {
             .registerTypeHierarchyAdapter(PotionEffect.class, new PotionEffectAdapter())
             .registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
             .registerTypeHierarchyAdapter(Location.class, new LocationAdapter())
+            .registerTypeHierarchyAdapter(PracticeHologram.class, new HologramAdapter())
             .registerTypeHierarchyAdapter(Vector.class, new VectorAdapter())
             .registerTypeAdapter(BlockVector.class, new BlockVectorAdapter())
             .registerTypeHierarchyAdapter(KitType.class, new KitTypeJsonAdapter()) // custom KitType serializer
@@ -135,16 +133,11 @@ public final class PotPvPRP extends JavaPlugin {
     public ScoreboardHandler scoreboardHandler;
     public HologramHandler hologramHandler;
     public CommandHandler commandHandler;
-<<<<<<< HEAD
-    public NameTagHandler nameTagHandler;
-    public TablistHandler tablistHandler;
-=======
     public Ostentus nameTagHandler;
->>>>>>> master
 
     public UUIDCache uuidCache;
 
-    private final ChatColor dominantColor = ChatColor.RED;
+    private final ChatColor dominantColor = ChatColor.AQUA;
     private final PotPvPCache cache = new PotPvPCache();
 
     @Override
@@ -158,40 +151,23 @@ public final class PotPvPRP extends JavaPlugin {
         this.setupMongo();
 
         this.uuidCache = new UUIDCache();
+
+        kitHandler = new KitHandler();
+        eloHandler = new EloHandler();
 		
         this.commandHandler = new CommandHandler(this);
         this.commandHandler.bind(KitType.class).toProvider(new KitTypeProvider());
         this.commandHandler.bind(ChatColor.class).toProvider(new ChatColorProvider());
         this.commandHandler.bind(UUID.class).toProvider(new UUIDDrinkProvider());
-		
+
         this.registerExpansions();
         this.registerCommands();
         this.registerPermission();
-
-<<<<<<< HEAD
-=======
-        ScoreboardAdapter scoreboardAdapter = new ScoreboardAdapter();
-        NameTagAdapter nameTagAdapter = new NameTagAdapter();
-        //TablistAdapter tablistAdapter = new TablistAdapter();
-
-        this.scoreboardHandler = new ScoreboardHandler(this, scoreboardAdapter);
-        this.scoreboardHandler.setAssembleStyle(AssembleStyle.VIPER);
-        this.scoreboardHandler.setTicks(2);
-
-        this.nameTagHandler = new Ostentus(this, nameTagAdapter);
-        this.nameTagHandler.setTicks(4);
 
         /*if (this.configHandler.isTAB_ENABLED()) {
            long tickTime = tablistConfig.getInteger("TABLIST.UPDATE_TICKS") * 20L;
            this.tablistHandler = new TablistHandler(tablistAdapter, this, tickTime);
         }*/
-
-        if (this.getServer().getPluginManager().isPluginEnabled("HolographicDisplays")) {
-            this.logger("&7Found &cHolographicDisplays&7, Hooking holograms....");
-            hologramsConfig = new BasicConfigurationFile(this, "holograms");
-            this.hologramHandler = new HologramHandler(this, hologramsConfig);
-            this.hologramHandler.init();
-        }
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRuleValue("doDaylightCycle", "false");
@@ -199,9 +175,7 @@ public final class PotPvPRP extends JavaPlugin {
             world.setTime(6_000L);
         }
 
->>>>>>> master
-        kitHandler = new KitHandler();
-        eloHandler = new EloHandler();
+
         gameHandler = new GameHandler();
         duelHandler = new DuelHandler();
         lobbyHandler = new LobbyHandler();
@@ -229,16 +203,19 @@ public final class PotPvPRP extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new ButtonListener(), this);
         this.logger("&7Registering &clisteners&7...");
 
-        this.setupHourEvents();
+
+
+        //this.setupHourEvents();
 
         this.getServer().getScheduler().runTaskTimerAsynchronously(this, cache, 20L, 20L);
         this.logger("&7Initialized &cPotPvP &7Successfully!");
     }
 
-    @Override
+    @Override @SneakyThrows
     public void onDisable() {
         matchHandler.cleanup();
         arenaHandler.saveSchematics();
+        hologramHandler.save();
         scoreboardHandler.shutdown();
     }
 
@@ -300,7 +277,7 @@ public final class PotPvPRP extends JavaPlugin {
         commandHandler.register(new NightCommand(), "night", "nightMode");
         commandHandler.register(new SettingsCommand(), "settings");
         commandHandler.register(new ToggleDuelCommand(), "toggleduels", "tduels", "td");
-        commandHandler.register(new ViewPlayersInLobby(), "toggleGlobalChat", "tgc", "togglechat");
+        commandHandler.register(new ViewPlayersInLobby(), "viewPlayersInLobby", "viewplayers", "vpil");
 
         commandHandler.register(new SetSpawnCommand(), "setspawn");
         commandHandler.register(new PingCommand(), "ping");
@@ -333,6 +310,7 @@ public final class PotPvPRP extends JavaPlugin {
         pm.addPermission(new Permission("potpvp.silent", PermissionDefault.OP));
         pm.addPermission(new Permission("potpvp.famous", PermissionDefault.OP));
         pm.addPermission(new Permission("potpvp.spectate", PermissionDefault.OP));
+        pm.addPermission(new Permission("potpvp.donator", PermissionDefault.OP));
 
         this.commandHandler.registerPermissions();
         this.logger("&7Registering &cpermissions&7...");
@@ -341,25 +319,23 @@ public final class PotPvPRP extends JavaPlugin {
     private void registerExpansions() {
         ScoreboardAdapter scoreboardAdapter = new ScoreboardAdapter();
         NameTagAdapter nameTagAdapter = new NameTagAdapter();
-        TablistAdapter tablistAdapter = new TablistAdapter();
+        //TablistAdapter tablistAdapter = new TablistAdapter();
 
         this.scoreboardHandler = new ScoreboardHandler(this, scoreboardAdapter);
-        this.scoreboardHandler.setAssembleStyle(AssembleStyle.KOHI);
-        this.scoreboardHandler.setTicks(2L);
+        this.scoreboardHandler.setAssembleStyle(AssembleStyle.VIPER);
+        this.scoreboardHandler.setTicks(2);
 
-        this.nameTagHandler = new NameTagHandler(this);
-        this.nameTagHandler.registerAdapter(nameTagAdapter);
+        this.nameTagHandler = new Ostentus(this, nameTagAdapter);
+        this.nameTagHandler.setTicks(4);
 
-        this.tablistHandler = new TablistHandler(this);
-        this.tablistHandler.registerAdapter(tablistAdapter, 20L);
 
         if (this.getServer().getPluginManager().isPluginEnabled("HolographicDisplays")) {
             this.logger("&7Found &cHolographicDisplays&7, Hooking holograms...");
             this.hologramHandler = new HologramHandler();
 
-            this.commandHandler.bind(PracticeHologram.class).toProvider(new HologramProvider());
+            // this.commandHandler.bind(PracticeHologram.class).toProvider(new HologramProvider());
             this.commandHandler.bind(HologramType.class).toProvider(new HologramTypeProvider());
-            this.commandHandler.register(new HologramCommands(), "prachologram");
+            this.commandHandler.register(new HologramCommands(), "prachologram", "ph");
         }
     }
 

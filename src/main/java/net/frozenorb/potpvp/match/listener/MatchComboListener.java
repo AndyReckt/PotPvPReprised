@@ -16,7 +16,7 @@ public class MatchComboListener implements Listener {
     public void onStart(MatchStartEvent event) {
         Match match = event.getMatch();
 
-        int noDamageTicks = match.getKitType().getId().contains("COMBO") ? 3 : 20;
+        int noDamageTicks = match.getKitType().getId().toUpperCase().contains("COMBO") ? 3 : 20;
         match.getTeams().forEach(team -> team.getAliveMembers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.setMaximumNoDamageTicks(noDamageTicks)));
     }
 }

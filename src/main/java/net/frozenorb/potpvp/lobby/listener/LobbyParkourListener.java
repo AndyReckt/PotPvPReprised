@@ -60,8 +60,8 @@ public class LobbyParkourListener implements Listener {
                 }
             } else if (block.getType() == Material.GOLD_PLATE) {
                 event.setCancelled(true);
-                Parkour parkour = parkourMap.get(player.getUniqueId());
-                if (parkour != null) {
+                if (block.getRelative(BlockFace.DOWN).getType() == Material.DIAMOND_BLOCK) {
+                    Parkour parkour = parkourMap.get(player.getUniqueId());
                     Parkour.Checkpoint checkpoint = parkour.getCheckpoint();
                     if (!checkpoint.getLocation().equals(block.getLocation())) {
                         parkour.setCheckpoint(new Parkour.Checkpoint(block.getLocation()));

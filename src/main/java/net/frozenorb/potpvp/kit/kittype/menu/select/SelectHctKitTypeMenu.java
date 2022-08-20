@@ -1,37 +1,31 @@
 package net.frozenorb.potpvp.kit.kittype.menu.select;
 
 import com.google.common.base.Preconditions;
-
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.kit.kittype.KitType;
-import net.frozenorb.potpvp.util.Callback;
 import net.frozenorb.potpvp.party.Party;
+import net.frozenorb.potpvp.util.Callback;
 import net.frozenorb.potpvp.util.InventoryUtils;
 import net.frozenorb.potpvp.util.menu.Button;
 import net.frozenorb.potpvp.util.menu.Menu;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class SelectKitTypeMenu extends Menu {
+public final class SelectHctKitTypeMenu extends Menu {
 
     private final boolean reset;
     private final String title;
     private final Callback<KitType> callback;
-    private boolean editor = false;
 
-    public SelectKitTypeMenu(Callback<KitType> callback, String title) {
+    public SelectHctKitTypeMenu(Callback<KitType> callback, String title) {
         this(callback, true, title);
         setPlaceholder(true);
     }
-    public SelectKitTypeMenu(boolean editor, Callback<KitType> callback, String title) {
-        this(callback, title);
-        this.editor = editor;
-    }
 
-    public SelectKitTypeMenu(Callback<KitType> callback, boolean reset, String title) {
+    public SelectHctKitTypeMenu(Callback<KitType> callback, boolean reset, String title) {
         this.callback = Preconditions.checkNotNull(callback, "callback");
         this.reset = reset;
         this.title = title;
@@ -53,25 +47,9 @@ public final class SelectKitTypeMenu extends Menu {
     @Override
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
-        int index = 0;
-
-        for (KitType kitType : KitType.getAllTypes()) {
-            if (!player.isOp() && kitType.isHidden()) {
-                continue;
-            }
-
-            if (editor && !kitType.isEditable()) {
-                continue;
-            }
-
-            buttons.put(index++, new KitTypeButton(kitType, callback));
-        }
-
-        Party party = PotPvPRP.getInstance().getPartyHandler().getParty(player);
-        if (party != null) {
-            buttons.put(index, new KitTypeButton(KitType.teamFight, callback));
-        }
-
+        buttons.put(3, new HctKitTypeButton(callback, "BARD_HCF"));
+        buttons.put(4, new HctKitTypeButton(callback, "DIAMOND_HCF"));
+        buttons.put(5, new HctKitTypeButton(callback, "ARCHER_HCF"));
         return buttons;
     }
 

@@ -1,15 +1,15 @@
 package net.frozenorb.potpvp.match.listener;
 
+import java.util.Arrays;
 import java.util.UUID;
 
+import net.frozenorb.potpvp.match.event.MatchStartEvent;
 import net.frozenorb.potpvp.util.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,6 +32,8 @@ import net.frozenorb.potpvp.match.MatchState;
 import net.frozenorb.potpvp.match.MatchTeam;
 import net.frozenorb.potpvp.adapter.nametag.NameTagAdapter;
 import net.frozenorb.potpvp.util.Cuboid;
+import xyz.refinedev.spigot.handlers.KnockbackHandler;
+import xyz.refinedev.spigot.knockback.KnockbackAPI;
 
 public final class MatchGeneralListener implements Listener {
 
@@ -57,6 +59,10 @@ public final class MatchGeneralListener implements Listener {
         if (match.getState() == MatchState.ENDING) {
             event.getDrops().removeIf(i -> i.getType() == Material.POTION || i.getType() == Material.GLASS_BOTTLE || i.getType() == Material.MUSHROOM_SOUP || i.getType() == Material.BOWL);
         }
+
+        Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(), () -> {
+            match.getArena().getBounds().getChunks().forEach(c -> Arrays.stream(c.getEntities()).filter(e -> e instanceof Item).forEach(Entity::remove));
+        }, 50L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -141,7 +147,7 @@ public final class MatchGeneralListener implements Listener {
                 player.teleport(arena.getSpectatorSpawn());
             } else if (to.getBlockY() >= bounds.getUpperY() || to.getBlockY() <= bounds.getLowerY()) { // if left vertically
 
-                if ((match.getKitType().getId().equals("SUMO") || match.getKitType().getId().equals("SPLEEF"))) {
+                if ((match.getKitType().isSumo() || match.getKitType().isSpleef())) {
                     if (to.getBlockY() <= bounds.getLowerY() && bounds.getLowerY() - to.getBlockY() <= 20) return; // let the player fall 10 blocks
                     match.markDead(player);
                     match.addSpectator(player, null, true);
@@ -149,7 +155,7 @@ public final class MatchGeneralListener implements Listener {
 
                 player.teleport(arena.getSpectatorSpawn());
             } else {
-                if (match.getKitType().getId().equals("SUMO") || match.getKitType().getId().equals("SPLEEF")) { // if they left horizontally
+                if (match.getKitType().isSumo() || match.getKitType().isSpleef()) { // if they left horizontally
                     match.markDead(player);
                     match.addSpectator(player, null, true);
                     player.teleport(arena.getSpectatorSpawn());
@@ -158,7 +164,7 @@ public final class MatchGeneralListener implements Listener {
                 event.setCancelled(true);
             }
         } else if (to.getBlockY() + 5 < arena.getSpectatorSpawn().getBlockY()) { // if the player is still in the arena bounds but fell down from the spawn point
-            if (match.getKitType().getId().equals("SUMO")) {
+            if (match.getKitType().isSumo()) {
                 match.markDead(player);
                 match.addSpectator(player, null, true);
                 player.teleport(arena.getSpectatorSpawn());
@@ -193,8 +199,8 @@ public final class MatchGeneralListener implements Listener {
         }
 
         Match match = matchHandler.getMatchPlaying(damager);
-        boolean isSpleef = match != null && match.getKitType().getId().equals("SPLEEF");
-        boolean isSumo = match != null && match.getKitType().getId().equals("SUMO");
+        boolean isSpleef = match != null && match.getKitType().isSpleef();
+        boolean isSumo = match != null && match.getKitType().isSumo();
 
         // we only specifically allow damage where both players are in a match together
         // and not on the same team, everything else is cancelled.
@@ -265,5 +271,23 @@ public final class MatchGeneralListener implements Listener {
         Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(), () -> {
             event.getPlayer().setItemInHand(null);
         }, 1L);
+    }
+
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMatchStartSetKb(MatchStartEvent event) {
+       Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(), () -> {
+           Match match = event.getMatch();
+           if (KnockbackAPI.getByName(match.getKitType().getId().toLowerCase()) != null) {
+               match.getAllPlayers()
+                       .stream().filter(player -> Bukkit.getPlayer(player) != null)
+                       .forEach(player -> KnockbackAPI.applyKnockback(KnockbackAPI.getByName(match.getKitType().getId().toLowerCase()), Bukkit.getPlayer(player)));
+           }
+           else {
+               match.getAllPlayers()
+                       .stream().filter(player -> Bukkit.getPlayer(player) != null)
+                       .forEach(player -> KnockbackAPI.applyKnockback(KnockbackAPI.getDefault(), Bukkit.getPlayer(player)));
+           }
+       }, 40L);
     }
 }

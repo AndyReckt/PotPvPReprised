@@ -20,8 +20,19 @@ public enum Setting {
             ChatColor.BLUE + "Toggles side scoreboard in-match"
         ),
         Material.ITEM_FRAME,
-        ChatColor.YELLOW + "Show match scoreboard",
-        ChatColor.YELLOW + "Hide match scoreboard",
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
+        true,
+        null // no permission required
+    ),
+    SHOW_PING(
+        ChatColor.LIGHT_PURPLE + "Ping Display",
+        ImmutableList.of(
+            ChatColor.BLUE + "Toggles if the ping is displayed on the scoreboard"
+        ),
+        Material.ITEM_FRAME,
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
         true,
         null // no permission required
     ),
@@ -31,8 +42,8 @@ public enum Setting {
             ChatColor.BLUE + "Enable this to display messages as spectators join."
         ),
         Material.BONE,
-        ChatColor.YELLOW + "Show spectator join messages",
-        ChatColor.YELLOW + "Hide spectator join messages",
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
         true,
         null // no permission required
     ),
@@ -45,8 +56,8 @@ public enum Setting {
             ChatColor.BLUE + "Disable to only see alive players in match."
         ),
         Material.GLASS_BOTTLE,
-        ChatColor.YELLOW + "Show other spectators",
-        ChatColor.YELLOW + "Hide other spectators",
+        ChatColor.GREEN + "Show spectators",
+        ChatColor.RED + "Hide spectators",
         true,
         null // no permission required
     ),
@@ -59,8 +70,8 @@ public enum Setting {
                     ChatColor.BLUE + "Disable to disallow match spectators."
             ),
             Material.REDSTONE_TORCH_ON,
-            ChatColor.YELLOW + "Let players spectate your matches",
-            ChatColor.YELLOW + "Don't let players spectate your matches",
+            ChatColor.GREEN + "Enabled",
+            ChatColor.RED + "Disabled",
             true,
             null // no permission required
     ),
@@ -72,9 +83,9 @@ public enum Setting {
            "",
             ChatColor.BLUE + "Disable to not receive, but still send duels."
         ),
-        Material.FIRE,
-        ChatColor.YELLOW + "Allow duel invites",
-        ChatColor.YELLOW + "Disallow duel invites",
+        Material.IRON_SWORD,
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
         true,
         "potpvp.toggleduels"
     ),
@@ -87,8 +98,8 @@ public enum Setting {
             ChatColor.BLUE + "Disable to hide others lightning."
         ),
         Material.TORCH,
-        ChatColor.YELLOW + "Show other lightning",
-        ChatColor.YELLOW + "Hide other lightning",
+        ChatColor.GREEN + "Show lightning",
+        ChatColor.RED + "Hide lightning",
         true,
         "potpvp.togglelightning"
     ),
@@ -101,8 +112,8 @@ public enum Setting {
             ChatColor.BLUE + "Disable to play in day time."
         ),
         Material.GLOWSTONE,
-        ChatColor.YELLOW + "Time is set to night",
-        ChatColor.YELLOW + "Time is set to day",
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
         false,
         null // no permission required
     ),
@@ -115,8 +126,22 @@ public enum Setting {
             ChatColor.BLUE + "Disable to see nobody."
         ),
         Material.EYE_OF_ENDER,
-        ChatColor.YELLOW + "Players are shown in lobby",
-        ChatColor.YELLOW + "Players are hidden in lobby",
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
+        false,
+        "potpvp.donator" // no permission required
+    ),
+    FLY_IN_LOBBY(
+        ChatColor.RED + "Fly in Lobby",
+        ImmutableList.of(
+            ChatColor.BLUE + "If enabled, you will be",
+            ChatColor.BLUE + "able to fly in the lobby.",
+            "",
+            ChatColor.BLUE + "Disable to not fly."
+        ),
+        Material.FEATHER,
+        ChatColor.GREEN + "Enabled",
+        ChatColor.RED + "Disabled",
         false,
         "potpvp.donator" // no permission required
     ),
@@ -129,8 +154,8 @@ public enum Setting {
                 ChatColor.BLUE + "Disable to only see your own party join messages."
             ),
             Material.IRON_DOOR,
-            ChatColor.YELLOW + "Tournament join messages are shown",
-            ChatColor.YELLOW + "Tournament join messages are hidden",
+            ChatColor.GREEN + "Enabled",
+            ChatColor.RED + "Disabled",
             true,
             null // no permission required
     ),
@@ -143,8 +168,8 @@ public enum Setting {
                 ChatColor.BLUE + "Disable to only see your own party elimination messages."
             ),
             Material.SKULL_ITEM,
-            ChatColor.YELLOW + "Tournament elimination messages are shown",
-            ChatColor.YELLOW + "Tournament elimination messages are hidden",
+            ChatColor.GREEN + "Enabled",
+            ChatColor.RED + "Disabled",
             true,
             null // no permission required
     );

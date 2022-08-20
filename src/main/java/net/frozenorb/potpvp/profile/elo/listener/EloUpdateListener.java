@@ -20,7 +20,7 @@ import java.util.List;
 
 public final class EloUpdateListener implements Listener {
 
-    private static final String ELO_CHANGE_MESSAGE = ChatColor.translateAlternateColorCodes('&', "&eElo Changes: &a%s +%d (%d) &c%s -%d (%d)");
+    private static final String ELO_CHANGE_MESSAGE = ChatColor.translateAlternateColorCodes('&', "&fElo Changes: &a%s +%d (%d) &c%s -%d (%d)");
 
     private final EloHandler eloHandler;
     private final EloCalculator eloCalculator;

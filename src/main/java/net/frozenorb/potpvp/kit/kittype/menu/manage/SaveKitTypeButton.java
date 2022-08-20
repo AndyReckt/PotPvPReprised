@@ -32,7 +32,7 @@ final class SaveKitTypeButton extends Button {
     public List<String> getDescription(Player player) {
         return ImmutableList.of(
             "",
-            ChatColor.YELLOW + "Click this to save the kit type."
+            ChatColor.YELLOW + "Click this to save the kit editor items."
         );
     }
 
@@ -48,13 +48,14 @@ final class SaveKitTypeButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        ItemStack[] fullInv = player.getOpenInventory().getTopInventory().getContents();
+        ItemStack[] fullInv = player.getInventory().getContents();
         ItemStack[] kitInventory = new ItemStack[28];
-        int index = -1;
+        int index = 0;
 
-        for (int x = 2; x <= 5; x++) {
-            for (int z = 2; z < 9; z++) {
-                kitInventory[++index] = fullInv[x * 9 + z];
+        for (int i = 9; i < 36; i++) {
+            ItemStack item = fullInv[i];
+            if (item != null) {
+                kitInventory[index++] = item;
             }
         }
 
@@ -62,5 +63,6 @@ final class SaveKitTypeButton extends Button {
         type.saveAsync();
 
         player.closeInventory();
+        player.sendMessage(ChatColor.GREEN + "Kit editor items saved.");
     }
 }

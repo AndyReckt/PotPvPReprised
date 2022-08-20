@@ -87,7 +87,7 @@ public abstract class Menu {
             ItemMeta meta = item.getItemMeta();
 
             if (meta != null && meta.hasDisplayName()) {
-                meta.setDisplayName(meta.getDisplayName() + "§k§e§r§e§m");
+                meta.setDisplayName(meta.getDisplayName() + "§k§f§r§f§m");
             }
 
             item.setItemMeta(meta);

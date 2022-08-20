@@ -1,5 +1,6 @@
 package net.frozenorb.potpvp.match.listener;
 
+import me.andyreckt.holiday.utils.CC;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.kit.Kit;
 import net.frozenorb.potpvp.kit.KitHandler;
@@ -9,6 +10,7 @@ import net.frozenorb.potpvp.match.MatchHandler;
 import net.frozenorb.potpvp.match.MatchTeam;
 import net.frozenorb.potpvp.match.event.MatchCountdownStartEvent;
 
+import net.frozenorb.potpvp.match.event.MatchEndEvent;
 import net.frozenorb.potpvp.party.Party;
 import net.frozenorb.potpvp.pvpclasses.PvPClasses;
 import org.bukkit.Bukkit;
@@ -22,9 +24,14 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public final class KitSelectionListener implements Listener {
+
+    public static ArrayList<UUID> kitTaken = new ArrayList<>();
+
 
     /**
      * Give players their kits when their match countdown starts
@@ -35,7 +42,7 @@ public final class KitSelectionListener implements Listener {
         Match match = event.getMatch();
         KitType kitType = match.getKitType();
 
-        if (kitType.getId().equals("SUMO")) return; // no kits for sumo
+        if (kitType.isSumo()) return; // no kits for sumo
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             MatchTeam team = match.getTeam(player.getUniqueId());
@@ -165,20 +172,36 @@ public final class KitSelectionListener implements Listener {
         Player player = event.getPlayer();
 
         for (Kit kit : kitHandler.getKits(player, kitType)) {
-            if (kit.isSelectionItem(clickedItem)) {
-                kit.apply(player);
-                player.sendMessage(ChatColor.YELLOW + "You equipped your \"" + kit.getName() + "\" " + kitType.getDisplayName() + " kit.");
+            if (!kit.isSelectionItem(clickedItem)) continue;
+            if (kitTaken.contains(player.getUniqueId())) {
+                player.sendMessage(CC.RED + "You cannot take more than one kit per match");
                 return;
             }
+            kit.apply(player);
+            player.sendMessage(ChatColor.YELLOW + "You equipped your \"" + kit.getName() + "\" " + kitType.getDisplayName() + " kit.");
+            kitTaken.add(player.getUniqueId());
+            match.getUsedKit().put(player.getUniqueId(), kit);
+            return;
         }
 
         Kit defaultKit = Kit.ofDefaultKit(kitType);
 
         if (defaultKit.isSelectionItem(clickedItem)) {
+            if (kitTaken.contains(player.getUniqueId())) {
+                player.sendMessage(CC.RED + "You cannot take more than one kit per match");
+                return;
+            }
             defaultKit.apply(player);
             player.sendMessage(ChatColor.YELLOW + "You equipped the default kit for " + kitType.getDisplayName() + ".");
+            kitTaken.add(player.getUniqueId());
+            match.getUsedKit().put(player.getUniqueId(), defaultKit);
         }
+    }
 
+    @EventHandler
+    public void onMatchEndEvent(MatchEndEvent event) {
+        Match match = event.getMatch();
+        match.getAllPlayers().forEach(player -> kitTaken.remove(player));
     }
 
 }
