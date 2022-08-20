@@ -5,6 +5,8 @@ import com.google.common.io.Files;
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import net.frozenorb.potpvp.PotPvPRP;
+import net.frozenorb.potpvp.hologram.impl.GlobalHologram;
+import net.frozenorb.potpvp.hologram.impl.KitHologram;
 import net.frozenorb.potpvp.hologram.task.HologramUpdateTask;
 import org.bukkit.Bukkit;
 
@@ -43,16 +45,35 @@ public final class HologramHandler {
                 try (Reader hologramReader = Files.newReader(hologramsFile, Charsets.UTF_8)) {
                     Type hologramListType = new TypeToken<List<PracticeHologram>>(){}.getType();
                     List<PracticeHologram> hologramList = PotPvPRP.getGson().fromJson(hologramReader, hologramListType);
-                    hologramList.forEach(PracticeHologram::spawn);
-                    this.holograms.addAll(hologramList);
+                    if (!(hologramList == null) && !hologramList.isEmpty()) {
+                        for (PracticeHologram hologram : hologramList) {
+                            if (hologram instanceof GlobalHologram) {
+                                GlobalHologram globalHologram = (GlobalHologram) hologram;
+                                globalHologram.spawn();
+                                this.holograms.add(globalHologram);
+                            } else {
+                                KitHologram kitHologram = (KitHologram) hologram;
+                                kitHologram.spawn();
+                                this.holograms.add(kitHologram);
+                            }
+                        }
+
+                    }
                 }
+            } else {
+                hologramsFile.createNewFile();
+                Files.write(
+                        PotPvPRP.getGson().toJson(this.holograms),
+                        hologramsFile,
+                        Charsets.UTF_8
+                );
             }
         } catch (Exception e) {
             // Can't recover from this lol
             throw new RuntimeException(e);
         }
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(PotPvPRP.getInstance(), new HologramUpdateTask(), 20L, 20L);
+        Bukkit.getScheduler().runTaskTimer(PotPvPRP.getInstance(), new HologramUpdateTask(), 20L, 20L);
     }
 
     /**
@@ -60,7 +81,7 @@ public final class HologramHandler {
      */
     public void save() throws IOException {
         Files.write(
-                PotPvPRP.getGson().toJson(holograms),
+                PotPvPRP.getGson().toJson(this.holograms),
                 new File(PotPvPRP.getInstance().getDataFolder(), HOLOGRAMS_FILE_NAME),
                 Charsets.UTF_8
         );

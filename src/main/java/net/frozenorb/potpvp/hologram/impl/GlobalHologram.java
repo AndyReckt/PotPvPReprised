@@ -5,6 +5,8 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
+import me.andyreckt.holiday.Holiday;
+import me.andyreckt.holiday.utils.CC;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.hologram.PracticeHologram;
 import org.bukkit.configuration.Configuration;
@@ -41,14 +43,17 @@ public class GlobalHologram extends PracticeHologram {
             apiHologram.getLocation().getChunk().load();
         }
 
-        for ( String line : config.getStringList("SETTINGS.DEFAULT.LINES") ) {
+        for ( String line : CC.translate(config.getStringList("SETTINGS.DEFAULT.LINES")) ) {
             if (line.contains("<top>")) {
                 int position = 1;
-                for ( Map.Entry<String, Integer> entry : plugin.getEloHandler().topElo(null).entrySet()) {
-                    apiHologram.appendTextLine(config.getString("SETTINGS.DEFAULT.FORMAT")
-                            .replace("<number>", String.valueOf(position))
-                            .replace("<value>", String.valueOf(entry.getValue()))
-                            .replace("<name>", entry.getKey()));
+
+                for (Map.Entry<String, Integer> entry : plugin.getEloHandler().topElo(null).entrySet()) {
+                    apiHologram.appendTextLine(CC.translate(
+                            config.getString("SETTINGS.DEFAULT.FORMAT")
+                                    .replace("<number>", String.valueOf(position))
+                                    .replace("<value>", String.valueOf(entry.getValue()))
+                                    .replace("<name>", Holiday.getInstance().getProfileHandler().getByName(entry.getKey()).getDisplayNameWithColor())
+                    ));
                     position++;
                 }
                 continue;

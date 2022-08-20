@@ -5,6 +5,7 @@ import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**

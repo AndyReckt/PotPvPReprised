@@ -5,6 +5,8 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.andyreckt.holiday.Holiday;
+import me.andyreckt.holiday.utils.CC;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.hologram.PracticeHologram;
 import net.frozenorb.potpvp.kit.kittype.KitType;
@@ -44,15 +46,17 @@ public class KitHologram extends PracticeHologram {
             apiHologram.getLocation().getChunk().load();
         }
 
-        for ( String line : config.getStringList("SETTINGS.KIT.LINES") ) {
+        for ( String line : CC.translate(config.getStringList("SETTINGS.KIT.LINES")) ) {
             if (line.contains("<top>")) {
                 int position = 1;
                 for ( Map.Entry<String, Integer> entry : plugin.getEloHandler().topElo(kit).entrySet()) {
 
-                    apiHologram.appendTextLine(config.getString("SETTINGS.KIT.FORMAT")
-                            .replace("<number>", String.valueOf(position))
-                            .replace("<value>", String.valueOf(entry.getValue()))
-                            .replace("<name>", entry.getKey()));
+                    apiHologram.appendTextLine(CC.translate(
+                            config.getString("SETTINGS.KIT.FORMAT")
+                                    .replace("<number>", String.valueOf(position))
+                                    .replace("<value>", String.valueOf(entry.getValue()))
+                                    .replace("<name>", Holiday.getInstance().getProfileHandler().getByName(entry.getKey()).getDisplayNameWithColor())
+                    ));
                     position++;
                 }
                 continue;

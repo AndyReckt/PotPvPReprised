@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.hologram.HologramHandler;
 import net.frozenorb.potpvp.hologram.PracticeHologram;
+import net.frozenorb.potpvp.hologram.impl.GlobalHologram;
 
 /**
  * This Project is property of Refine Development © 2021
@@ -24,10 +25,10 @@ public class HologramUpdateTask implements Runnable {
         for ( PracticeHologram hologram : handler.getHolograms() ) {
             if (hologram.updateIn <= 0) {
                 hologram.update();
-                return;
+                hologram.updateIn = 20;
             }
-
             hologram.updateIn -= 1;
+            hologram.update();
         }
     }
 }
