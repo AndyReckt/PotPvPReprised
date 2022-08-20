@@ -1,8 +1,10 @@
 package net.frozenorb.potpvp.arena.menu.select;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.frozenorb.potpvp.arena.Arena;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -23,23 +25,20 @@ import net.frozenorb.potpvp.util.Callback;
 public class SelectArenaMenu extends Menu {
     
     private KitType kitType;
-    private Callback<Set<String>> mapsCallback;
+    private Callback<ArenaSchematic> arenaCallback;
     private String title;
-    Set<String> allMaps;
-    Set<String> enabledSchematics = Sets.newHashSet();
-    
-    public SelectArenaMenu(KitType kitType, Callback<Set<String>> mapsCallback, String title) {
+    Set<ArenaSchematic> allMaps = new HashSet<>();
+
+    public SelectArenaMenu(KitType kitType, Callback<ArenaSchematic> arenaCallback, String title) {
         this.kitType = kitType;
-        this.mapsCallback = mapsCallback;
+        this.arenaCallback = arenaCallback;
         this.title = title;
         
         for (ArenaSchematic schematic : PotPvPRP.getInstance().getArenaHandler().getSchematics()) {
             if (MatchHandler.canUseSchematic(this.kitType, schematic)) {
-                enabledSchematics.add(schematic.getName());
+                allMaps.add(schematic);
             }
         }
-        
-        this.allMaps = ImmutableSet.copyOf(enabledSchematics);
     }
 
     @Override
@@ -52,19 +51,9 @@ public class SelectArenaMenu extends Menu {
         Map<Integer, Button> buttons = Maps.newHashMap();
 
         int i = 0;
-        for (String mapName : allMaps) {
-            buttons.put(i++, new ArenaButton(mapName, enabledSchematics));
+        for (ArenaSchematic schematic : allMaps) {
+            buttons.put(i++, new ArenaButton(schematic, arenaCallback));
         }
-        
-        int bottomRight = 8;
-        while (buttons.get(bottomRight) != null) {
-            bottomRight += 9;
-        }
-        
-        bottomRight += 9;
-        
-        buttons.put(bottomRight, new ToggleAllButton(allMaps, enabledSchematics));
-        buttons.put(bottomRight - 8, new SendDuelButton(enabledSchematics, mapsCallback));
         
         return buttons;
     }

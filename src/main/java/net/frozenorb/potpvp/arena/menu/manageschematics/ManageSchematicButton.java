@@ -28,7 +28,7 @@ final class ManageSchematicButton extends Button {
 
     @Override
     public String getName(Player player) {
-        return ChatColor.YELLOW + "Manage " + schematic.getName();
+        return (schematic.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + "Manage " + schematic.getName();
     }
 
     @Override
@@ -63,7 +63,12 @@ final class ManageSchematicButton extends Button {
 
     @Override
     public Material getMaterial(Player player) {
-        return schematic.isEnabled() ? Material.EMERALD_BLOCK : Material.REDSTONE_BLOCK;
+        return schematic.getIcon().getItemType();
+    }
+
+    @Override
+    public byte getDamageValue(Player player) {
+        return schematic.getIcon().getData();
     }
 
     @Override

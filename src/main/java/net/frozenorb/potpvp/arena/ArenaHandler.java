@@ -129,6 +129,8 @@ public final class ArenaHandler {
                     }
                 }
 
+                chunks.addAll(arena.getBounds().getChunks());
+
                 // force load all chunks
                 // that are at all covered by this map.
                 // Only do this if chunk is NOT loaded

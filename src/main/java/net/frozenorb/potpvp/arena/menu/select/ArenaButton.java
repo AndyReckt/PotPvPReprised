@@ -3,6 +3,8 @@ package net.frozenorb.potpvp.arena.menu.select;
 import java.util.List;
 import java.util.Set;
 
+import net.frozenorb.potpvp.arena.ArenaSchematic;
+import net.frozenorb.potpvp.util.Callback;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,47 +19,36 @@ import org.bukkit.inventory.InventoryView;
 @AllArgsConstructor
 public class ArenaButton extends Button {
 
-    private String mapName;
-    private Set<String> maps;
-    
+    private ArenaSchematic schematic;
+    private Callback<ArenaSchematic> callback;
+
     @Override
     public String getName(Player player) {
-        return mapName;
+        return ChatColor.AQUA + schematic.getName();
     }
     
     @Override
     public List<String> getDescription(Player player) {
         List<String> lines = Lists.newLinkedList();
-        
-        boolean isEnabled = maps.contains(mapName);
-        
-        if (isEnabled) {
-            lines.add(ChatColor.GRAY + "Click here to " + ChatColor.RED + "remove" + ChatColor.GRAY + " this arena from the selection.");
-        } else {
-            lines.add(ChatColor.GRAY + "Click here to " + ChatColor.GREEN + "add" + ChatColor.GRAY + " this arena to the selection.");
-        }
+
+        lines.add(" ");
+        lines.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click here to select this arena.");
         
         return lines;
     }
 
     @Override
     public Material getMaterial(Player player) {
-        boolean isEnabled = maps.contains(mapName);
-        
-        return isEnabled ? Material.MAP : Material.EMPTY_MAP;
+        return schematic.getIcon().getItemType();
+    }
+
+    @Override
+    public byte getDamageValue(Player player) {
+        return schematic.getIcon().getData();
     }
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType) {
-        if (maps.contains(mapName)) {
-            maps.remove(mapName);
-            
-            player.sendMessage(ChatColor.RED + "Removed " + mapName + " from the selection.");
-        } else {
-            maps.add(mapName);
-            
-            player.sendMessage(ChatColor.GREEN + "Added " + mapName + " to your selection.");
-        }
-        
+        callback.callback(schematic);
     }
 }

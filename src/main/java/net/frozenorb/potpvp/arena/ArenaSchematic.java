@@ -9,6 +9,10 @@ import java.io.File;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.frozenorb.potpvp.util.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 /**
  * Represents an arena schematic. See {@link net.frozenorb.potpvp.arena}
@@ -76,15 +80,23 @@ public final class ArenaSchematic {
      */
     @Getter @Setter private boolean buildUHCOnly = false;
 
+    @Getter @Setter private boolean finalUHCOnly = false;
+
+    @Getter @Setter private boolean bridgeOnly = false;
+
     @Getter @Setter private boolean HCFOnly = false;
 
     @Getter @Setter private String eventName = null;
+
+    @Getter @Setter private MaterialData icon = new MaterialData(Material.GRASS);
 
     /**
      * Index on the X axis on the grid (and in calculations regarding model arenas)
      * @see ArenaGrid
      */
     @Getter @Setter private int gridIndex;
+
+    @Getter @Setter private boolean raidingOnly = false;
 
     public ArenaSchematic() {} // for gson
 
