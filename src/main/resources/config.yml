@@ -15,10 +15,11 @@ MONGO:
 SETTINGS:
   UPDATE-TIME: 20 # Seconds
   DEFAULT:
-    FORMAT: '&b<number># &f<name> &7» &f<value> &7» <division>'
+    FORMAT: '&b#<number> &f<name> &7» &f<value>'
     LINES:
-      - "&b&lPractice <type>"
       - "&b&lLeaderboards"
+      - "&7"
+      - "&a◉ GLOBAL ◉"
       - "&7"
       - "<top>"
       - "&7"
@@ -33,9 +34,8 @@ SETTINGS:
       - "&7"
       - "&fNext update in &b<update>"
   KIT:
-    FORMAT: '&b<number># &f<name> &7» &f<value>'
+    FORMAT: '&b#<number> &f<name> &7» &f<value>'
     LINES:
-      - "&b&lPractice <kit_name>"
       - "&b&lLeaderboards"
       - "&7"
       - "&a◉ <kit> ◉"
