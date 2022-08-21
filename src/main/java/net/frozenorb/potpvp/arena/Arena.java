@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.EntityType;
-import xyz.refinedev.spigot.chunk.ChunkSnapshot;
+import xyz.refinedev.spigot.api.chunk.ChunkSnapshot;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.util.AngleUtils;
 

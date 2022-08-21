@@ -87,7 +87,7 @@ public enum Setting {
         ChatColor.GREEN + "Enabled",
         ChatColor.RED + "Disabled",
         true,
-        "potpvp.toggleduels"
+        null
     ),
     VIEW_OTHERS_LIGHTNING(
         ChatColor.GREEN + "Death Lightning",
@@ -101,7 +101,7 @@ public enum Setting {
         ChatColor.GREEN + "Show lightning",
         ChatColor.RED + "Hide lightning",
         true,
-        "potpvp.togglelightning"
+        null
     ),
     NIGHT_MODE(
         ChatColor.GRAY + "Night Mode",

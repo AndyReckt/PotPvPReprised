@@ -11,7 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.InventoryView;
-import xyz.refinedev.spigot.utils.CC;
+import xyz.refinedev.command.util.CC;
 
 import java.util.*;
 

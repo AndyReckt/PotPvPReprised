@@ -32,8 +32,8 @@ import net.frozenorb.potpvp.match.MatchState;
 import net.frozenorb.potpvp.match.MatchTeam;
 import net.frozenorb.potpvp.adapter.nametag.NameTagAdapter;
 import net.frozenorb.potpvp.util.Cuboid;
-import xyz.refinedev.spigot.handlers.KnockbackHandler;
-import xyz.refinedev.spigot.knockback.KnockbackAPI;
+import xyz.refinedev.spigot.api.knockback.KnockbackAPI;
+import xyz.refinedev.spigot.knockback.KnockbackProfile;
 
 public final class MatchGeneralListener implements Listener {
 
@@ -278,16 +278,16 @@ public final class MatchGeneralListener implements Listener {
     public void onMatchStartSetKb(MatchStartEvent event) {
        Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(), () -> {
            Match match = event.getMatch();
-           if (KnockbackAPI.getByName(match.getKitType().getId().toLowerCase()) != null) {
+
+           if (KnockbackAPI.getInstance().getProfile(match.getKitType().getId().toLowerCase()) != null) {
                match.getAllPlayers()
                        .stream().filter(player -> Bukkit.getPlayer(player) != null)
-                       .forEach(player -> KnockbackAPI.applyKnockback(KnockbackAPI.getByName(match.getKitType().getId().toLowerCase()), Bukkit.getPlayer(player)));
-           }
-           else {
+                       .forEach(player -> KnockbackAPI.getInstance().setPlayerProfile(Bukkit.getPlayer(player), match.getKitType().getId().toLowerCase()));
+           } else {
                match.getAllPlayers()
                        .stream().filter(player -> Bukkit.getPlayer(player) != null)
-                       .forEach(player -> KnockbackAPI.applyKnockback(KnockbackAPI.getDefault(), Bukkit.getPlayer(player)));
+                       .forEach(player -> KnockbackAPI.getInstance().setPlayerProfile(Bukkit.getPlayer(player), KnockbackAPI.getInstance().getDefaultProfile()));
            }
-       }, 40L);
+       }, 10L);
     }
 }

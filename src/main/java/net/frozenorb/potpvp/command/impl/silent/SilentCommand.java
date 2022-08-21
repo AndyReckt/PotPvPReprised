@@ -14,7 +14,7 @@ import xyz.refinedev.command.annotation.Sender;
 public class SilentCommand implements PotPvPCommand {
 
     @Command(name = "", desc = "Silent mode")
-    @Require("potpvp.staff.silent")
+    @Require("potpvp.silent")
     public void silent(@Sender Player sender) {
         if (sender.hasMetadata("ModMode")) {
             sender.removeMetadata("ModMode", PotPvPRP.getInstance());

@@ -52,7 +52,7 @@ public class SpectateCommand implements PotPvPCommand {
 
         // only check the seting if the target is actually playing in the match
         if (!bypassesSpectating && (targetMatch.getTeam(target.getUniqueId()) != null && !settingHandler.getSetting(target, Setting.ALLOW_SPECTATORS))) {
-            if (sender.isOp() || sender.hasPermission("potpvp.spectate")) {
+            if (sender.isOp() || sender.hasPermission("potpvp.staff")) {
                 sender.sendMessage(ChatColor.RED + "Bypassing " + target.getName() + "'s no spectators preference...");
             } else {
                 sender.sendMessage(ChatColor.RED + target.getName() + " doesn't allow spectators at the moment.");
@@ -60,7 +60,7 @@ public class SpectateCommand implements PotPvPCommand {
             }
         }
 
-        if ((!sender.isOp() && !sender.hasPermission("potpvp.spectate")) && targetMatch.getTeams().size() == 2 && !bypassesSpectating) {
+        if ((!sender.isOp() && !sender.hasPermission("potpvp.staff")) && targetMatch.getTeams().size() == 2 && !bypassesSpectating) {
             MatchTeam teamA = targetMatch.getTeams().get(0);
             MatchTeam teamB = targetMatch.getTeams().get(1);
 

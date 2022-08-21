@@ -25,7 +25,7 @@ import xyz.refinedev.command.annotation.Command;
 import xyz.refinedev.command.annotation.OptArg;
 import xyz.refinedev.command.annotation.Require;
 import xyz.refinedev.command.annotation.Sender;
-import xyz.refinedev.spigot.utils.CC;
+import xyz.refinedev.command.util.CC;
 
 import java.util.ArrayList;
 import java.util.Collections;

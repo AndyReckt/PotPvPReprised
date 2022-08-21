@@ -82,7 +82,7 @@ public final class SpectatorItemListener extends ItemListener {
             return;
         }
 
-        boolean bypassPerm = clicker.hasPermission("potpvp.inventory.all");
+        boolean bypassPerm = clicker.hasPermission("potpvp.staff");
         boolean sameTeam = clickedTeam.getAllMembers().contains(clicker.getUniqueId());
 
         if (bypassPerm || sameTeam) {

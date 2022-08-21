@@ -14,7 +14,7 @@ import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.match.MatchHandler;
 import net.frozenorb.potpvp.profile.setting.Setting;
 import net.frozenorb.potpvp.profile.setting.SettingHandler;
-import xyz.refinedev.spigot.utils.CC;
+import xyz.refinedev.command.util.CC;
 
 final class MultiplexingScoreGetter implements ScoreGetter {
 
