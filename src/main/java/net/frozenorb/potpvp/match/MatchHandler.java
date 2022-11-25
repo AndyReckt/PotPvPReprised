@@ -45,6 +45,7 @@ public final class MatchHandler {
         Bukkit.getPluginManager().registerEvents(new GoldenHeadListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new KitSelectionListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchBlockPickupListener(), PotPvPRP.getInstance());
+        Bukkit.getPluginManager().registerEvents(new MatchBridgeListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchBuildListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchBoxingListener(), PotPvPRP.getInstance());
         Bukkit.getPluginManager().registerEvents(new MatchComboListener(), PotPvPRP.getInstance());

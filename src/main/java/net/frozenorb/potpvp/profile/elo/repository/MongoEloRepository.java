@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import me.andyreckt.holiday.Holiday;
+import net.frozenorb.potpvp.util.HolidayUtils;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 
@@ -123,7 +125,9 @@ public final class MongoEloRepository implements EloRepository {
                 public void accept(Document document) {
                     Object eloNumber = document.get(kitTypeName);
                     int elo = eloNumber != null && eloNumber instanceof Number ? ((Number) eloNumber).intValue() : EloHandler.DEFAULT_ELO;
-                    toInsert.put(PatchedPlayerUtils.getFormattedName(UUID.fromString((String) document.get("players", ArrayList.class).get(0))), elo);
+                    toInsert.put(Holiday.getInstance().getProfileHandler()
+                            .getByUUIDFor5Minutes(UUID.fromString((String) document.get("players", ArrayList.class).get(0))).getDisplayNameWithColor(),
+                            elo);
                 }
             });
 

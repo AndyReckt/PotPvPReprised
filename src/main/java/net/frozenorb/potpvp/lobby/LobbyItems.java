@@ -22,7 +22,7 @@ public final class LobbyItems {
     public static final ItemStack DISABLE_SPEC_MODE_ITEM = new ItemStack(Material.LEVER);
     public static final ItemStack MANAGE_ITEM = new ItemStack(Material.ANVIL);
     public static final ItemStack UNFOLLOW_ITEM = new ItemStack(Material.INK_SACK, 1, DyeColor.RED.getDyeData());
-    public static final ItemStack PLAYER_STATISTICS = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+    public static final ItemStack PLAYER_STATISTICS = new ItemStack(Material.EMERALD);
     public static final ItemStack PARTY_ITEM = new ItemStack(Material.NAME_TAG);
 
     static {
@@ -32,7 +32,7 @@ public final class LobbyItems {
         ItemUtils.setDisplayName(ENABLE_SPEC_MODE_ITEM, AQUA + "Enable Spectator Mode");
         ItemUtils.setDisplayName(MANAGE_ITEM, RED + "Manage PotPvP");
         ItemUtils.setDisplayName(UNFOLLOW_ITEM, RED + "Stop Following");
-        ItemUtils.setDisplayName(PLAYER_STATISTICS, RED + "Statistics");
+        ItemUtils.setDisplayName(PLAYER_STATISTICS, AQUA + "Statistics");
         ItemUtils.setDisplayName(PARTY_ITEM, AQUA + "Create Party");
     }
 

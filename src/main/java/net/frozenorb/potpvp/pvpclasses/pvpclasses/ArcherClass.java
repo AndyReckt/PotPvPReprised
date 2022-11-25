@@ -1,7 +1,7 @@
 package net.frozenorb.potpvp.pvpclasses.pvpclasses;
 
-import kotlin.Pair;
 import lombok.Getter;
+import me.andyreckt.holiday.utils.Pair;
 import net.frozenorb.potpvp.PotPvPRP;
 import net.frozenorb.potpvp.util.TimeUtils;
 import net.frozenorb.potpvp.match.MatchTeam;
@@ -229,7 +229,7 @@ public class ArcherClass extends PvPClass {
 
         if (markedBy.containsKey(player.getName())) {
             for (Pair<String, Long> pair : markedBy.get(player.getName())) {
-                if (victim.getName().equals(pair.getFirst()) && pair.getSecond() > System.currentTimeMillis()) {
+                if (victim.getName().equals(pair.getA()) && pair.getB() > System.currentTimeMillis()) {
                     return false;
                 }
             }

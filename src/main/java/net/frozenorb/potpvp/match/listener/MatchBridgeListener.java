@@ -23,6 +23,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -75,6 +76,7 @@ public class MatchBridgeListener implements Listener {
 
 			if (!match.getKitType().isBridges())
 				return;
+
 			match.getUsedKit().getOrDefault(player.getUniqueId(), Kit.ofDefaultKit(match.getKitType())).apply(player);
 			match.markDead(player, event.getEntity().getKiller());
 			player.spigot().respawn();
@@ -198,7 +200,23 @@ public class MatchBridgeListener implements Listener {
 	public void onLeave(PlayerQuitEvent event) {
 		Match match = PotPvPRP.getInstance().getMatchHandler().getMatchPlaying(event.getPlayer());
 		if (match != null) {
-			if (match.getKitType().getId().equalsIgnoreCase("Bridges")) {
+			if (match.getKitType().isBridges()) {
+				for (MatchTeam team : match.getTeams()) {
+					for (UUID member : team.getAllMembers()) {
+						if (member != event.getPlayer().getUniqueId()) {
+							match.getWins().put(team, 5);
+							match.checkEnded();
+						}
+					}
+				}
+			}
+		}
+	}
+	@EventHandler
+	public void onLeave(PlayerKickEvent event) {
+		Match match = PotPvPRP.getInstance().getMatchHandler().getMatchPlaying(event.getPlayer());
+		if (match != null) {
+			if (match.getKitType().isBridges()) {
 				for (MatchTeam team : match.getTeams()) {
 					for (UUID member : team.getAllMembers()) {
 						if (member != event.getPlayer().getUniqueId()) {
@@ -291,7 +309,7 @@ public class MatchBridgeListener implements Listener {
 
 			if (match.getKitType().isBridges()) {
 				if (LunarClientAPI.getInstance().isRunningLunarClient(player)) {
-					LunarClientAPICooldown.sendCooldown(player, "bridgeArrow");
+					//	LunarClientAPICooldown.sendCooldown(player, "bridgeArrow"); //TODO ADD
 				}
 				new BukkitRunnable() {
 					@Override

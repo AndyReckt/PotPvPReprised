@@ -1,29 +1,25 @@
 package net.frozenorb.potpvp.lobby;
 
+import lombok.experimental.UtilityClass;
 import net.frozenorb.potpvp.PotPvPRP;
-import net.frozenorb.potpvp.match.duel.DuelHandler;
-import net.frozenorb.potpvp.profile.follow.FollowHandler;
 import net.frozenorb.potpvp.kit.KitItems;
 import net.frozenorb.potpvp.kit.menu.editkit.EditKitMenu;
-import net.frozenorb.potpvp.events.EventItems;
-import net.frozenorb.potpvp.party.Party;
-import net.frozenorb.potpvp.party.PartyHandler;
-import net.frozenorb.potpvp.party.PartyItems;
-import net.frozenorb.potpvp.profile.setting.Setting;
-import net.frozenorb.potpvp.queue.QueueHandler;
-import net.frozenorb.potpvp.queue.QueueItems;
+import net.frozenorb.potpvp.match.duel.DuelHandler;
 import net.frozenorb.potpvp.match.rematch.RematchData;
 import net.frozenorb.potpvp.match.rematch.RematchHandler;
 import net.frozenorb.potpvp.match.rematch.RematchItems;
+import net.frozenorb.potpvp.party.Party;
+import net.frozenorb.potpvp.party.PartyHandler;
+import net.frozenorb.potpvp.party.PartyItems;
+import net.frozenorb.potpvp.profile.follow.FollowHandler;
+import net.frozenorb.potpvp.profile.setting.Setting;
+import net.frozenorb.potpvp.queue.QueueHandler;
+import net.frozenorb.potpvp.queue.QueueItems;
 import net.frozenorb.potpvp.util.menu.Menu;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
-import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public final class LobbyUtils {
@@ -145,13 +141,9 @@ public final class LobbyUtils {
                 inventory.setItem(0, QueueItems.JOIN_SOLO_UNRANKED_QUEUE_ITEM);
                 inventory.setItem(1, QueueItems.JOIN_SOLO_RANKED_QUEUE_ITEM);
                 inventory.setItem(4, LobbyItems.ENABLE_SPEC_MODE_ITEM);
+                inventory.setItem(6, LobbyItems.PLAYER_STATISTICS);
                 inventory.setItem(7, LobbyItems.PARTY_ITEM);
                 inventory.setItem(8, KitItems.OPEN_EDITOR_ITEM);
-
-                ItemStack eventItem = EventItems.getEventItem();
-                if (eventItem != null) {
-                    inventory.setItem(4, eventItem);
-                }
 //                if (player.hasPermission("potpvp.admin")) {
 //                    if (eventItem != null) {
 //                        inventory.setItem(5, LobbyItems.PLAYER_STATISTICS);

@@ -152,6 +152,7 @@ public final class KitType {
     @Getter @Setter private boolean raiding = false;
 
     @Getter @Setter private boolean bridges = false;
+    @Getter @Setter private boolean stickSpawn = false;
 
     @Getter @Setter private int neededWins = 1;
 

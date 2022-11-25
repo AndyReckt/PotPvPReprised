@@ -1,10 +1,12 @@
 package net.frozenorb.potpvp.util;
 
 import lombok.experimental.UtilityClass;
+import me.andyreckt.holiday.Holiday;
 import net.frozenorb.potpvp.PotPvPRP;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -79,11 +81,27 @@ public class PatchedPlayerUtils {
         player.removeMetadata("denyMove", PotPvPRP.getInstance());
     }
 
+
+    public void lockPos(JavaPlugin plugin, Player player, int seconds) {
+        player.setFlying(false);
+        player.setSprinting(false);
+        player.setWalkSpeed(0.0f);
+        player.setFoodLevel(0);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * seconds, 250));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * seconds, 250));
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            player.setFlying(false);
+            player.setSprinting(true);
+            player.setWalkSpeed(0.2f);
+            player.setFoodLevel(20);
+        }, (long)seconds * 20L);
+    }
+
     public static List<String> mapToNames(Collection<UUID> uuids) {
         return uuids.stream().map(PotPvPRP.getInstance().uuidCache::name).collect(Collectors.toList());
     }
 
     public static String getFormattedName(UUID uuid) {
-        return PotPvPRP.getInstance().getUuidCache().name(uuid);
+        return Holiday.getInstance().getProfileHandler().getByUUIDFor5Minutes(uuid).getDisplayName();
     }
 }

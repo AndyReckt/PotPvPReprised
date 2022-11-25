@@ -15,8 +15,6 @@ import net.frozenorb.potpvp.command.binds.*;
 import net.frozenorb.potpvp.command.impl.*;
 import net.frozenorb.potpvp.command.impl.duel.AcceptCommand;
 import net.frozenorb.potpvp.command.impl.duel.DuelCommand;
-import net.frozenorb.potpvp.command.impl.events.ForceEndCommand;
-import net.frozenorb.potpvp.command.impl.events.HostCommand;
 import net.frozenorb.potpvp.command.impl.match.LeaveCommand;
 import net.frozenorb.potpvp.command.impl.match.MapCommand;
 import net.frozenorb.potpvp.command.impl.match.SpectateCommand;
@@ -31,8 +29,6 @@ import net.frozenorb.potpvp.command.impl.silent.SilentFollowCommand;
 import net.frozenorb.potpvp.command.impl.silent.UnfollowCommand;
 import net.frozenorb.potpvp.command.impl.stats.EloSetCommands;
 import net.frozenorb.potpvp.command.impl.stats.StatsResetCommands;
-import net.frozenorb.potpvp.events.EventListeners;
-import net.frozenorb.potpvp.events.GameHandler;
 import net.frozenorb.potpvp.hologram.HologramHandler;
 import net.frozenorb.potpvp.hologram.HologramType;
 import net.frozenorb.potpvp.hologram.PracticeHologram;
@@ -62,6 +58,7 @@ import net.frozenorb.potpvp.util.menu.ButtonListener;
 import net.frozenorb.potpvp.util.scoreboard.api.AssembleStyle;
 import net.frozenorb.potpvp.util.scoreboard.api.ScoreboardHandler;
 import net.frozenorb.potpvp.util.uuid.UUIDCache;
+import net.minecraft.server.v1_8_R3.GameRules;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -86,6 +83,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public final class PotPvPRP extends JavaPlugin {
 
+    @Getter
     private static PotPvPRP instance;
 
     @Getter
@@ -98,6 +96,7 @@ public final class PotPvPRP extends JavaPlugin {
             .registerTypeAdapter(BlockVector.class, new BlockVectorAdapter())
             .registerTypeHierarchyAdapter(KitType.class, new KitTypeJsonAdapter()) // custom KitType serializer
             .registerTypeAdapter(ChunkSnapshot.class, new ChunkSnapshotAdapter())
+            .setPrettyPrinting()
             .serializeNulls()
             .create();
 
@@ -125,7 +124,6 @@ public final class PotPvPRP extends JavaPlugin {
     private PostMatchInvHandler postMatchInvHandler;
     private FollowHandler followHandler;
     private EloHandler eloHandler;
-    private GameHandler gameHandler;
     private PvPClassHandler pvpClassHandler;
     private TournamentHandler tournamentHandler;
 
@@ -175,7 +173,6 @@ public final class PotPvPRP extends JavaPlugin {
         }
 
 
-        gameHandler = new GameHandler();
         duelHandler = new DuelHandler();
         lobbyHandler = new LobbyHandler();
         arenaHandler = new ArenaHandler();
@@ -197,7 +194,6 @@ public final class PotPvPRP extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PearlCooldownListener(), this);
         this.getServer().getPluginManager().registerEvents(new TabCompleteListener(), this);
         this.getServer().getPluginManager().registerEvents(new StatisticsHandler(), this);
-        this.getServer().getPluginManager().registerEvents(new EventListeners(), this);
         this.getServer().getPluginManager().registerEvents(new TournamentListener(), this);
         this.getServer().getPluginManager().registerEvents(new ButtonListener(), this);
         this.logger("&7Registering &clisteners&7...");
@@ -214,7 +210,7 @@ public final class PotPvPRP extends JavaPlugin {
     public void onDisable() {
         matchHandler.cleanup();
         arenaHandler.saveSchematics();
-        hologramHandler.save();
+        if (hologramHandler != null) hologramHandler.save();
         scoreboardHandler.shutdown();
     }
 
@@ -292,9 +288,6 @@ public final class PotPvPRP extends JavaPlugin {
         commandHandler.register(new MapCommand(), "map");
         commandHandler.register(new LeaveCommand(), "leave", "spawn");
 
-        commandHandler.register(new ForceEndCommand(), "forceend");
-        commandHandler.register(new HostCommand(), "host", "events");
-
         commandHandler.register(new AcceptCommand(), "accept");
         commandHandler.register(new DuelCommand(), "duel");
 
@@ -342,11 +335,4 @@ public final class PotPvPRP extends JavaPlugin {
         this.getServer().getConsoleSender().sendMessage(CC.translate("&7[&cPotPvPRP&7] &r" + message));
     }
 
-    //fuck you kotlin
-    public static PotPvPRP getInstance() { return instance; }
-
-    public ArenaHandler getArenaHandler() { return arenaHandler; }
-
-    public GameHandler getGameHandler() { return gameHandler; }
-    // fuck your mother, kotlin
 }

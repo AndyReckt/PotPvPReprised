@@ -28,6 +28,7 @@ public final class MatchTeam {
     /**
      * All players who are currently alive.
      */
+    @Getter
     private final Set<UUID> aliveMembers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     // convenience constructor for 1v1s, queues, etc
@@ -58,14 +59,14 @@ public final class MatchTeam {
         return aliveMembers.contains(playerUuid);
     }
 
-    /**
-     * Gets a immutable set of all alive team members
-     * @see MatchTeam#aliveMembers
-     * @return immutable set of all alive team members
-     */
-    public Set<UUID> getAliveMembers() {
-        return ImmutableSet.copyOf(aliveMembers);
-    }
+//    /**
+//     * Gets a immutable set of all alive team members
+//     * @see MatchTeam#aliveMembers
+//     * @return immutable set of all alive team members
+//     */
+//    public Set<UUID> getAliveMembers() {
+//        return ImmutableSet.copyOf(aliveMembers);
+//    }
 
     public UUID getFirstAliveMember() {
         return aliveMembers.iterator().next();

@@ -18,10 +18,9 @@ import org.jetbrains.annotations.NotNull;
 
 public final class StatisticsMenu extends Menu {
 
-    private static final Button BLACK_PANE = Button.fromItem(ItemBuilder.of(Material.STAINED_GLASS_PANE).data(DyeColor.BLACK.getData()).name(" ").build());
-
     public StatisticsMenu() {
         setAutoUpdate(true);
+        setPlaceholder(true);
     }
 
     @Override
@@ -48,10 +47,6 @@ public final class StatisticsMenu extends Menu {
                 y++;
                 x = 1;
             }
-        }
-
-        for (int i = 0; i < 54; i++) {
-            buttons.putIfAbsent(i, BLACK_PANE);
         }
 
         return buttons;

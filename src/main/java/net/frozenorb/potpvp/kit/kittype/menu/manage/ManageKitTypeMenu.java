@@ -66,10 +66,11 @@ public class ManageKitTypeMenu extends Menu {
         buttons.put(getSlot(4, 3), new BooleanTraitButton<>(type, "FinalUHC", KitType::setFinalUHC, KitType::isFinalUHC, KitType::saveAsync));
         buttons.put(getSlot(5, 3), new BooleanTraitButton<>(type, "Archer", KitType::setArcher, KitType::isArcher, KitType::saveAsync));
         buttons.put(getSlot(6, 3), new BooleanTraitButton<>(type, "Bridges", KitType::setBridges, KitType::isBridges, KitType::saveAsync));
+        buttons.put(getSlot(7, 3), new BooleanTraitButton<>(type, "Stick Spawn", KitType::setStickSpawn, KitType::isStickSpawn, KitType::saveAsync));
 
 
 
-        buttons.put(getSlot(8, 4), new Button() {
+        buttons.put(getSlot(8, 5), new Button() {
 
             @Override
             public String getName(Player player) {
@@ -102,7 +103,7 @@ public class ManageKitTypeMenu extends Menu {
 
         ItemStack[] kit = type.getEditorItems();
         int x = 0;
-        int y = 0;
+        int y = 3;
 
         for (ItemStack editorItem : kit) {
             if (editorItem != null) {
@@ -117,7 +118,7 @@ public class ManageKitTypeMenu extends Menu {
                 x = 0;
                 y++;
 
-                if (y >= 4) {
+                if (y >= 4 + 3) {
                     break;
                 }
             }

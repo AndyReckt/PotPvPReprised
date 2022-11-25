@@ -90,7 +90,7 @@ public final class MatchCountdownListener implements Listener {
     @EventHandler
     public void onPlayerMove(MatchCountdownStartEvent event) {
         Match match = event.getMatch();
-        if (match == null || !match.getKitType().isSumo() || match.getState() != MatchState.COUNTDOWN) return;
+        if (match == null || !match.getKitType().isSumo() && !match.getKitType().isStickSpawn() || match.getState() != MatchState.COUNTDOWN) return;
 
         for ( MatchTeam team : match.getTeams() ) {
             for ( UUID playerUuid : team.getAllMembers() ) {
@@ -103,7 +103,7 @@ public final class MatchCountdownListener implements Listener {
     @EventHandler
     public void onPlayerMove(MatchStartEvent event) {
         Match match = event.getMatch();
-        if (match == null || !match.getKitType().isSumo() || match.getState() != MatchState.IN_PROGRESS) return;
+        if (match == null || !match.getKitType().isSumo() && !match.getKitType().isStickSpawn() || match.getState() != MatchState.IN_PROGRESS) return;
 
         for ( MatchTeam team : match.getTeams() ) {
             for ( UUID playerUuid : team.getAllMembers() ) {

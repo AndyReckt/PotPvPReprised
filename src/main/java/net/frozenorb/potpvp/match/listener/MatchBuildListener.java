@@ -173,6 +173,9 @@ public final class MatchBuildListener implements Listener {
     }
 
     private boolean canBePlaced(Block placedBlock, Match match) {
+
+        if (match.getKitType().isBridges()) return true;
+
         for (int x = -SEARCH_RADIUS; x <= SEARCH_RADIUS; x++) {
             for (int y = -SEARCH_RADIUS; y <= SEARCH_RADIUS; y++) {
                 for (int z = -SEARCH_RADIUS; z <= SEARCH_RADIUS; z++) {

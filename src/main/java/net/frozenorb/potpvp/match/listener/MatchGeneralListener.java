@@ -3,6 +3,8 @@ package net.frozenorb.potpvp.match.listener;
 import java.util.Arrays;
 import java.util.UUID;
 
+import net.frozenorb.potpvp.match.event.BridgeEnterLavaPortalEvent;
+import net.frozenorb.potpvp.match.event.BridgeEnterWaterPortalEvent;
 import net.frozenorb.potpvp.match.event.MatchStartEvent;
 import net.frozenorb.potpvp.util.PlayerUtils;
 import org.bukkit.Bukkit;
@@ -16,12 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import net.frozenorb.potpvp.PotPvPRP;
@@ -46,6 +43,11 @@ public final class MatchGeneralListener implements Listener {
         if (match == null) {
             return;
         }
+
+        if (match.getKitType().isBridges()) {
+            return;
+        }
+
 
         // creates 'proper' player death animation (of the player falling over)
         // which we don't get due to our immediate respawn
@@ -72,6 +74,43 @@ public final class MatchGeneralListener implements Listener {
         Match match = matchHandler.getMatchPlaying(player);
 
         if (match == null) {
+            return;
+        }
+        if (match.getKitType().isBridges()) {
+            return;
+        }
+
+        MatchState state = match.getState();
+
+        if (state == MatchState.COUNTDOWN || state == MatchState.IN_PROGRESS) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                UUID onlinePlayerUuid = onlinePlayer.getUniqueId();
+
+                // if this player has no relation to the match skip
+                if (match.getTeam(onlinePlayerUuid) == null && !match.isSpectator(onlinePlayerUuid)) {
+                    continue;
+                }
+
+                ChatColor playerColor = NameTagAdapter.getNameColor(player, onlinePlayer);
+                String playerFormatted = playerColor + player.getName();
+
+                onlinePlayer.sendMessage(playerFormatted + ChatColor.GRAY + " disconnected.");
+            }
+        }
+
+        // run this regardless of match state
+        match.markDead(player);
+    }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerKickEvent event) {
+        MatchHandler matchHandler = PotPvPRP.getInstance().getMatchHandler();
+        Player player = event.getPlayer();
+        Match match = matchHandler.getMatchPlaying(player);
+
+        if (match == null) {
+            return;
+        }
+        if (match.getKitType().isBridges()) {
             return;
         }
 
@@ -134,6 +173,41 @@ public final class MatchGeneralListener implements Listener {
         if (match == null) {
             return;
         }
+
+        if (match.getKitType().isSpleef()) {
+            if (event.getTo().getY() < (match.getArena().getTeam1Spawn().getY() - 8)) {
+                match.markDead(player);
+                match.addSpectator(player, null, true);
+                return;
+            }
+        }
+
+        if (event.getTo().getY() < (match.getArena().getTeam1Spawn().getY() - 18)) {
+            if (match.getKitType().isBridges()) {
+                match.markDead(player);
+                return;
+            }
+        }
+
+
+        if (event.getTo().getBlock().getType() == Material.LAVA || event.getTo().getBlock().getType() == Material.STATIONARY_LAVA) {
+            if (match.getKitType().isBridges()) {
+                BridgeEnterWaterPortalEvent bridgeEnterWaterPortalEvent = new BridgeEnterWaterPortalEvent(player, match);
+                Bukkit.getPluginManager().callEvent(bridgeEnterWaterPortalEvent);
+                return;
+            }
+        }
+
+        if (event.getTo().getBlock().getType() == Material.WATER || event.getTo().getBlock().getType() == Material.STATIONARY_WATER) {
+            if (match.getKitType().isBridges()) {
+                BridgeEnterLavaPortalEvent bridgeEnterLavaPortalEvent = new BridgeEnterLavaPortalEvent(player, match);
+                Bukkit.getPluginManager().callEvent(bridgeEnterLavaPortalEvent);
+                return;
+            }
+        }
+
+
+
 
         Arena arena = match.getArena();
         Cuboid bounds = arena.getBounds();

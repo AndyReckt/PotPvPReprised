@@ -1,8 +1,6 @@
 package net.frozenorb.potpvp.util;
 
-import kotlin.jvm.JvmStatic;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

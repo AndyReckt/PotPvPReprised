@@ -22,8 +22,8 @@ import net.frozenorb.potpvp.util.Cuboid;
  *  |  (4,1) (4,2)
  *  V
  *
- *  X is per {@link ArenaSchematic} and is stored in {@link ArenaSchematic#gridIndex}.
- *  Z is per {@link Arena} and is the {@link Arena}'s {@link Arena#copy}.
+ *  X is per {@link ArenaSchematic} and is stored in {@link ArenaSchematic#getGridIndex()}.
+ *  Z is per {@link Arena} and is the {@link Arena}'s {@link Arena#getCopy()}.
  *
  *  Each arena is allocated {@link #GRID_SPACING_Z} by {@link #GRID_SPACING_X} blocks
  *
@@ -101,7 +101,7 @@ public final class ArenaGrid {
                 }
             }
 
-        }.runTaskTimer(PotPvPRP.getInstance(), 8L, 8L);
+        }.runTaskTimer(PotPvPRP.getInstance(), 10L, 10L);
     }
 
     private void deleteArenas(ArenaSchematic schematic, int currentCopies, int toDelete, Runnable callback) {

@@ -40,6 +40,10 @@ public final class MatchDeathMessageListener implements Listener {
             return;
         }
 
+        if (match.getKitType().isBridges()) {
+            return;
+        }
+
         Player killed = event.getEntity();
         Bukkit.getScheduler().runTaskLater(PotPvPRP.getInstance(),() -> killed.spigot().respawn(), 3L);
 

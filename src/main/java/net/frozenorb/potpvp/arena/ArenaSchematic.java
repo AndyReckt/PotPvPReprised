@@ -2,7 +2,6 @@ package net.frozenorb.potpvp.arena;
 
 import com.google.common.base.Preconditions;
 
-import net.frozenorb.potpvp.events.event.GameEvent;
 import com.sk89q.worldedit.Vector;
 
 import java.io.File;
@@ -133,19 +132,6 @@ public final class ArenaSchematic {
         );
     }
 
-    public GameEvent getEvent() {
-        if (eventName != null) {
-            for (GameEvent event : GameEvent.getEvents()) {
-                if (event.getName().equalsIgnoreCase(eventName)) {
-                    return event;
-                }
-            }
-
-            eventName = null;
-        }
-
-        return null;
-    }
 
     @Override
     public boolean equals(Object o) {

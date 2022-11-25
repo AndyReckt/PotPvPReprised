@@ -2,6 +2,8 @@ package net.frozenorb.potpvp.lobby.menu.statistics;
 
 import java.util.List;
 
+import me.andyreckt.holiday.Holiday;
+import net.frozenorb.potpvp.util.PatchedPlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -52,6 +54,6 @@ public class PlayerButton extends Button {
     }
 
     private String getColoredName(Player player) {
-        return player.getName();
+        return Holiday.getInstance().getProfileHandler().getByPlayer(player).getDisplayNameWithColor();
     }
 }
